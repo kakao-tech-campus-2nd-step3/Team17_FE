@@ -20,6 +20,9 @@
     }
   },
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react/function-component-definition": "off",
+    "arrow-body-style": "off",
+    "react/self-closing-comp": "off"
   }
 }
