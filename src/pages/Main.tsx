@@ -1,16 +1,14 @@
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import DateSelect from '../components/DateSelect'
 
 const Main = () => {
   return (
     <MainWrapper>
-        <DateSelect />
+      <DateSelect />
     </MainWrapper>
   )
 }
 
-const MainWrapper = styled.div`
-    
-`
+const MainWrapper = styled.div``
 
 export default Main

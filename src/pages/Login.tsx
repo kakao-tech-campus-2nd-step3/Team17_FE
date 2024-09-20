@@ -1,45 +1,54 @@
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 
-import { SetStateAction, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import KAKAO_LOGO from '../assets/kakao_logo.svg';
+import { SetStateAction, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import KAKAO_LOGO from '../assets/kakao_logo.svg'
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [queryParams] = useSearchParams();
+  const [id, setId] = useState('')
+  const [password, setPassword] = useState('')
+  const [queryParams] = useSearchParams()
 
   const handleConfirm = () => {
     if (!id || !password) {
-      alert('아이디와 비밀번호를 입력해주세요.');
-      return null; // Ensure all paths return something
+      alert('아이디와 비밀번호를 입력해주세요.')
+      return null // Ensure all paths return something
     }
 
-    const redirectUrl = queryParams.get('redirect') ?? `${window.location.origin}/`;
-    window.location.replace(redirectUrl);
-    return null;
-  };
+    const redirectUrl =
+      queryParams.get('redirect') ?? `${window.location.origin}/`
+    window.location.replace(redirectUrl)
+    return null
+  }
 
   return (
     <Wrapper>
       <Logo src={KAKAO_LOGO} alt="카카오 CI" />
       <FormWrapper>
-        <UnderlineTextField placeholder="이름" value={id} onChange={(e: { target: { value: SetStateAction<string>; }; }) => setId(e.target.value)} />
+        <UnderlineTextField
+          placeholder="이름"
+          value={id}
+          onChange={(e: { target: { value: SetStateAction<string> } }) =>
+            setId(e.target.value)
+          }
+        />
         <Spacing />
         <UnderlineTextField
           type="password"
           placeholder="비밀번호"
           value={password}
-          onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
+          onChange={(e: { target: { value: SetStateAction<string> } }) =>
+            setPassword(e.target.value)
+          }
         />
         <Spacing />
         <Button onClick={handleConfirm}>로그인</Button>
       </FormWrapper>
     </Wrapper>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -48,12 +57,12 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-`;
+`
 
 const Logo = styled.img`
   width: 88px;
   color: #333;
-`;
+`
 
 const FormWrapper = styled.article`
   width: 100%;
@@ -64,7 +73,7 @@ const FormWrapper = styled.article`
     border: 1px solid rgba(0, 0, 0, 0.12);
     padding: 60px 52px;
   }
-`;
+`
 
 const Button = styled.button`
   width: 100%;
@@ -79,7 +88,7 @@ const Button = styled.button`
   &:hover {
     background-color: #f8f8f8;
   }
-`;
+`
 
 const UnderlineTextField = styled.input`
   width: 100%;
@@ -98,9 +107,9 @@ const UnderlineTextField = styled.input`
   &::placeholder {
     color: #7d7d7d;
   }
-`;
+`
 
 const Spacing = styled.div`
   width: 100%;
   height: 16px;
-`;
+`
