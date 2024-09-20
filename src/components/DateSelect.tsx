@@ -86,12 +86,14 @@ const DateSelectContainer = styled.div`
 const DateSelecter = styled.div`
     font-size: 25px;
     cursor: pointer;
+    font-weight: 500;
 `
 
 const DateSelection = styled.div`
     font-size: 20px;
     padding: 3px 20px;
     cursor: pointer;
+    font-weight: 500;
 `
 const CalendarContainer = styled.div`
     background-color: #ffffff;
