@@ -1,7 +1,12 @@
-import './App.css'
+import './App.css';
+import Main from './pages/Main';
 
-function App() {
-  return <div className="App" />
-}
+const App = () => {
+  return (
+    <div className="App">
+      <Main />
+    </div>
+  );
+};
 
-export default App
+export default App;
