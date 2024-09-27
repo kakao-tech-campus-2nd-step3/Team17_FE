@@ -1,43 +1,35 @@
-import styled from '@emotion/styled'
-import React from 'react'
+import styled from '@emotion/styled';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer = () => {
-  return (
-    <Wrapper>
-        <Container>
-            <NavBtn>
-                <NavIcon className='material-symbols-outlined'>
-                    home
-                </NavIcon>
-                <NavText>홈</NavText>
-            </NavBtn>
-            <NavBtn>
-                <NavIcon className='material-symbols-outlined'>
-                    group
-                </NavIcon>
-                <NavText>나의 그룹</NavText>
-            </NavBtn>
-            <NavBtn>
-                <NavIcon className='material-symbols-outlined'>
-                    data_loss_prevention
-                </NavIcon>
-                <NavText>그룹 탐색</NavText>
-            </NavBtn>
-            <NavBtn>
-                <NavIcon className='material-symbols-outlined'>
-                    storefront
-                </NavIcon>
-                <NavText>마켓</NavText>
-            </NavBtn>
-            <NavBtn>
-                <NavIcon className='material-symbols-outlined'>
-                    person
-                </NavIcon>
-                <NavText>마이페이지</NavText>
-            </NavBtn>
-        </Container>    
-    </Wrapper>
-  )
+    const location = useLocation()
+
+    return (
+        <Wrapper>
+            <Container>
+                <Link to='/'>
+                    <NavIcon isActive={location.pathname === '/'} className='material-symbols-outlined'>home</NavIcon>
+                    <NavText isActive={location.pathname === '/'}>홈</NavText>
+                </Link>
+                <Link to='/mygroup'>
+                    <NavIcon isActive={location.pathname === '/mygroup'} className='material-symbols-outlined'>group</NavIcon>
+                    <NavText isActive={location.pathname === '/mygroup'}>나의 그룹</NavText>
+                </Link>
+                <Link to='/searchgroup'>
+                    <NavIcon isActive={location.pathname === '/searchgroup'} className='material-symbols-outlined'>data_loss_prevention</NavIcon>
+                    <NavText isActive={location.pathname === '/searchgroup'}>그룹 탐색</NavText>
+                </Link>
+                <Link to='/market'>
+                    <NavIcon isActive={location.pathname === '/market'} className='material-symbols-outlined'>storefront</NavIcon>
+                    <NavText isActive={location.pathname === '/market'}>마켓</NavText>
+                </Link>
+                <Link to='/mypage'>
+                    <NavIcon isActive={location.pathname === '/mypage'} className='material-symbols-outlined'>person</NavIcon>
+                    <NavText isActive={location.pathname === '/mypage'}>마이페이지</NavText>
+                </Link>
+            </Container>
+        </Wrapper>
+    );
 }
 
 const Wrapper = styled.div`
@@ -56,7 +48,7 @@ const Wrapper = styled.div`
     box-sizing: border-box;
     border-radius: 30px 30px 0px 0px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-`
+`;
 
 const Container = styled.div`
     height: 100%;
@@ -64,21 +56,18 @@ const Container = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-`
+`;
 
-const NavBtn = styled.div`
 
-`
-
-const NavIcon = styled.div`
+const NavIcon = styled.div<{ isActive: boolean }>`
     margin-bottom: 7px;
     font-size: 24px;
-    color: #4E4C4C;
-`
+    color: ${(props) => (props.isActive ? '#7992EB' : '#4E4C4C')};
+`;
 
-const NavText = styled.div`
+const NavText = styled.div<{ isActive: boolean }>`
     font-size: 14px;
-    color: #4E4C4C;
-`
+    color: ${(props) => (props.isActive ? '#7992EB' : '#4E4C4C')};
+`;
 
 export default Footer
