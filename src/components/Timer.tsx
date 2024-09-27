@@ -103,6 +103,7 @@ const StopButton = styled.div`
     text-align: center;
     color: #ffffff;
     font-size: 20px;
+    cursor: pointer;
 `
 
 export default Timer;
