@@ -1,70 +1,106 @@
 import styled from '@emotion/styled';
 
-import LOGO from '../assets/logo.png';
-import KAKAO_LOGIN from '../assets/kakao.png';
+import { SetStateAction, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import KAKAO_LOGO from '../assets/kakao_logo.svg';
 
-const Login = ()=>
-  {
-      // oauth 요청 URL
-      const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=831c88c18690d9ffa567b4a7da7f8c0e&redirect_uri=http://localhost:8080/api/oauth/login
-`
-      const handleLogin = ()=>{
-          window.location.href = kakaoURL
-      }; 
+const Login = () => {
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  const [queryParams] = useSearchParams();
 
-return (
-  <LoginWrapper>
-    <Title>누구나 집에서 쉽게 즐기는 홈트</Title>
-    <SubTitle>홈트라이</SubTitle>
-    <img src={LOGO} alt="로그인 로고" />
-    <KakaoButton onClick={handleLogin}>
-      <img src={KAKAO_LOGIN} alt="카카오 로그인" />
-    </KakaoButton>
-    <Describe>카카오 로그인을 통해 &lsquo;홈트라이&lsquo;를 즐겨보세요</Describe>
-  </LoginWrapper>
-);
-  }
+  const handleConfirm = () => {
+    if (!id || !password) {
+      alert('아이디와 비밀번호를 입력해주세요.');
+      return null; // Ensure all paths return something
+    }
 
+    const redirectUrl = queryParams.get('redirect') ?? `${window.location.origin}/`;
+    window.location.replace(redirectUrl);
+    return null;
+  };
+
+  return (
+    <Wrapper>
+      <Logo src={KAKAO_LOGO} alt="카카오 CI" />
+      <FormWrapper>
+        <UnderlineTextField placeholder="이름" value={id} onChange={(e: { target: { value: SetStateAction<string>; }; }) => setId(e.target.value)} />
+        <Spacing />
+        <UnderlineTextField
+          type="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
+        />
+        <Spacing />
+        <Button onClick={handleConfirm}>로그인</Button>
+      </FormWrapper>
+    </Wrapper>
+  );
+};
 
 export default Login;
 
-
-const LoginWrapper = styled.div`
+const Wrapper = styled.div`
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+`;
+
+const Logo = styled.img`
+  width: 88px;
+  color: #333;
+`;
+
+const FormWrapper = styled.article`
   width: 100%;
-  height: 100vh;
-  background-color: #F2F2F6;
-  padding: 50px 15px 20px 15px;
-  box-sizing: border-box;
+  max-width: 580px;
+  padding: 16px;
+
+  @media screen and (min-width: 400px) {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 60px 52px;
+  }
 `;
 
-const Title = styled.h1`
-  font-size: 18px;
-  color: #7E88A2;
-`;
-
-const SubTitle = styled.h2`
-  font-size: 32px;
-  color: #5A80E2;
-  margin-top : 10px;
-  margin-bottom : 40px;
-`;
-
-const KakaoButton = styled.button`
-  border: none;
+const Button = styled.button`
+  width: 100%;
   border-radius: 4px;
-  padding: 10px 20px;
   display: flex;
+  justify-content: center;
   align-items: center;
   cursor: pointer;
-  margin-top : 50px;
+  transition: background-color 200ms;
+  box-shadow: 0 0 0 1px #ccc inset;
+  color: #111;
+  &:hover {
+    background-color: #f8f8f8;
+  }
 `;
 
-const Describe = styled.p`
-  font-size: 12px;
-  color: #888888;
-  margin-top: 5px;
+const UnderlineTextField = styled.input`
+  width: 100%;
+  box-sizing: border-box;
+  color: #191919;
+  transition: border-color 200ms;
+  border-style: solid;
+  &:focus {
+    outline: none;
+    border-color: #252525;
+  }
+  &:disabled {
+    color: #7d7d7d;
+    cursor: not-allowed;
+  }
+  &::placeholder {
+    color: #7d7d7d;
+  }
+`;
+
+const Spacing = styled.div`
+  width: 100%;
+  height: 16px;
 `;
