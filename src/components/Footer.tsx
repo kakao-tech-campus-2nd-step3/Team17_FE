@@ -55,6 +55,7 @@ const Wrapper = styled.div`
     padding: 5px 24px;
     box-sizing: border-box;
     border-radius: 30px 30px 0px 0px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 `
 
 const Container = styled.div`
@@ -72,10 +73,12 @@ const NavBtn = styled.div`
 const NavIcon = styled.div`
     margin-bottom: 7px;
     font-size: 24px;
+    color: #4E4C4C;
 `
 
 const NavText = styled.div`
     font-size: 14px;
+    color: #4E4C4C;
 `
 
 export default Footer
