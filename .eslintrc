@@ -29,6 +29,7 @@
     "jsx-a11y/no-static-element-interactions": "off",
     "@typescript-eslint/no-use-before-define": "off",
     "import/no-extraneous-dependencies": "off",
-    "no-alert": "off"
+    "no-alert": "off",
+    "react/prop-types": "off"
   }
 }

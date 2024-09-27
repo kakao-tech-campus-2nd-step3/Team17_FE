@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react"
-import styled from '@emotion/styled'
-import DateSelect from "./DateSelect"
+import { useEffect, useState } from "react";
+import styled from '@emotion/styled';
+import DateSelect from "./DateSelect";
+// import axiosInstance from "../api/axiosInstance";
 
 const Timer: React.FC = () => {
-
     const [isActive, setIsActive] = useState(false)
     const [time, setTime] = useState(0)
-
+    const [selectedDate, setSelectedDate] = useState(new Date())
 
     useEffect(() => {
         let interval: NodeJS.Timeout | undefined
@@ -15,13 +15,29 @@ const Timer: React.FC = () => {
             interval = setInterval(() => {
                 setTime((prevTime) => prevTime + 100)
             }, 100)
-        } else if (!isActive && time !== 0) {
+        } else {
             clearInterval(interval)
         }
 
         return () => clearInterval(interval)
-    }, [isActive, time])
+    }, [isActive])
 
+    // 날짜 변경 시 타이머 리셋
+    useEffect(() => {
+        setTime(0)
+        setIsActive(false)
+    }, [selectedDate])
+
+    // 백엔드에서 시간 받아옴
+    // const fetchTime = async (date: Date) => {
+    //     const response = await axiosInstance.get(`/api/exercise/...`)
+    //     const serverTime = response.data.time
+    //     setTime(serverTime)
+    // };
+
+    // useEffect(() => {
+    //     fetchTime(selectedDate)
+    // }, [selectedDate])
 
     const handleStart = () => {
         setIsActive(true)
@@ -41,30 +57,24 @@ const Timer: React.FC = () => {
         const minutes = Math.floor((runningTime / 60000) % 60)
         const seconds = Math.floor((runningTime / 1000) % 60)
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-    };
-    
-    
-    
-  return (
-    <div>
-        <DateSelect />
-        <TimerContainer>
-            <TimerContent>{formatTime(time)}</TimerContent>
-        </TimerContainer>
-        <StopButton>
+    }
 
-        </StopButton>
-        <button type="button" onClick={handleStart}>Start</button>
-        <button type="button" onClick={handleStop}>Stop</button>
-        <button type="button" onClick={handleReset}>Reset</button>
-
-    </div>
-  )
-}
+    return (
+        <div>
+            <DateSelect selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+            <TimerContainer>
+                <TimerContent>{formatTime(time)}</TimerContent>
+            </TimerContainer>
+            <button type="button" onClick={handleStart}>Start</button>
+            <button type="button" onClick={handleStop}>Stop</button>
+            <button type="button" onClick={handleReset}>Reset</button>
+        </div>
+    );
+};
 
 const TimerContainer = styled.div`
     margin: 20px;
-`
+`;
 
 const TimerContent = styled.div`
     font-size: 42px;
@@ -77,12 +87,7 @@ const TimerContent = styled.div`
     justify-content: center;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 17.362px 17.362px 20px 20px;
-    border: 0px solid #F4F9FF;
     background: linear-gradient(180deg, #B9CCFF 0%, #8FADFF 100%);
-`
+`;
 
-const StopButton = styled.div`
-
-`
-
-export default Timer
+export default Timer;
