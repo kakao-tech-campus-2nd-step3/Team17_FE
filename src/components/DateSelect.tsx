@@ -70,21 +70,14 @@ const DateSelect = () => {
 }
 
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-color: #f2f2f6;
-  padding: 50px 15px 20px 15px;
-  box-sizing: border-box;
+  
 `
 
 const DateSelectContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 `
 
 const DateSelecter = styled.div`
@@ -95,7 +88,7 @@ const DateSelecter = styled.div`
 
 const DateSelection = styled.div`
   font-size: 20px;
-  padding: 3px 20px;
+  padding: 3px 40px;
   cursor: pointer;
   font-weight: 500;
 `
