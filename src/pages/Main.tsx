@@ -15,7 +15,7 @@ const MainWrapper = styled.div`
     width: 100%;
     height: 100vh;
     background-color: #f2f2f6;
-    padding: 50px 15px 20px 15px;
+    padding: 50px 20px 20px 20px;
     box-sizing: border-box;
 `
 

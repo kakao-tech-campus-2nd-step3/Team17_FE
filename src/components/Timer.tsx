@@ -77,11 +77,11 @@ const TimerContainer = styled.div`
 `;
 
 const TimerContent = styled.div`
-    font-size: 42px;
+    font-size: 45px;
     font-weight: 600;
     color: #FFFFFF;
-    width: 310px;
-    height: 120px;
+    width: 315px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
