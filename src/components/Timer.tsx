@@ -65,6 +65,7 @@ const Timer: React.FC = () => {
             <TimerContainer>
                 <TimerContent>{formatTime(time)}</TimerContent>
             </TimerContainer>
+            <StopButton onClick={handleStop}>운동 종료</StopButton>
             <button type="button" onClick={handleStart}>Start</button>
             <button type="button" onClick={handleStop}>Stop</button>
             <button type="button" onClick={handleReset}>Reset</button>
@@ -73,7 +74,7 @@ const Timer: React.FC = () => {
 };
 
 const TimerContainer = styled.div`
-    margin: 20px;
+    margin: 20px 20px 15px 20px;
 `;
 
 const TimerContent = styled.div`
@@ -86,8 +87,22 @@ const TimerContent = styled.div`
     align-items: center;
     justify-content: center;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 17.362px 17.362px 20px 20px;
+    border-radius: 16px;
     background: linear-gradient(180deg, #B9CCFF 0%, #8FADFF 100%);
 `;
+
+const StopButton = styled.div`
+    width: 315px;
+    height: 50px;
+    background-color: #4B72FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 20px;
+    border-radius: 12px;
+    text-align: center;
+    color: #ffffff;
+    font-size: 20px;
+`
 
 export default Timer;
