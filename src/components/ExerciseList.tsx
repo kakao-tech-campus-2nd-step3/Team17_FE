@@ -1,6 +1,31 @@
 import styled from '@emotion/styled'
+import { useEffect } from 'react';
 
-const ExerciseList = () => {
+interface Exercise {
+    exerciseId: number;
+    exerciseName: string;
+    exerciseTime: number;
+    isActive: boolean;
+}
+
+interface ExerciseListProps {
+    selectedDate: Date;
+    exerciseList: Exercise[];
+    setTotalTime: (time: number) => void;
+    setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList, setTotalTime, setExerciseList }) => {
+
+    const today = new Date()
+    const isToday = selectedDate.toDateString() === today.toDateString()
+
+    useEffect(() => {
+        if (!isToday) {
+            // 오늘이 아니라면 해당 날짜의 exerciseList 출력
+        }
+    }, [isToday])
 
     const handleExerciseClick = () => {
         
@@ -9,6 +34,16 @@ const ExerciseList = () => {
     const handleListMenuClick = (event: React.MouseEvent) => {
         event?.stopPropagation()
     }
+
+    const formatTime = (timeInMillis: number) => {
+        const totalSeconds = Math.floor(timeInMillis / 1000)
+        const hours = Math.floor(totalSeconds / 3600)
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+        const seconds = totalSeconds % 60
+
+        return `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+    }
+
   return (
     <Wrapper>
         <TitleContainer>
@@ -16,18 +51,19 @@ const ExerciseList = () => {
             <AddButton>+</AddButton>
         </TitleContainer>
         <ListContainer>
-            <ListElement onClick={handleExerciseClick}>
-                <LeftContainer>
-                    <PlayIcon className='material-symbols-outlined'>play_circle</PlayIcon>
-                    <ExerciseTitle>죽음의 타바타</ExerciseTitle>
-                </LeftContainer>
-                <RightContainer>
-                    <ExerciseTime>10:00</ExerciseTime>
-                    <MenuIcon className='material-symbols-outlined' onClick={handleListMenuClick}>more_vert</MenuIcon>
-                </RightContainer>
-            </ListElement>
+            {exerciseList.map((exercise) => (
+                <ListElement key={exercise.exerciseId} onClick={handleExerciseClick}>
+                    <LeftContainer>
+                        <PlayIcon className='material-symbols-outlined'>play_circle</PlayIcon>
+                        <ExerciseTitle>{exercise.exerciseName}</ExerciseTitle>
+                    </LeftContainer>
+                    <RightContainer>
+                        <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
+                        <MenuIcon className='material-symbols-outlined' onClick={handleListMenuClick}>more_vert</MenuIcon>
+                    </RightContainer>
+                </ListElement>
+            ))}
         </ListContainer>
-        
     </Wrapper>
   )
 }
@@ -59,7 +95,7 @@ const AddButton = styled.div`
 const ListContainer = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 10px 0px;
+    padding: 5px 0px;
 `
 
 const ListElement = styled.div`
@@ -68,6 +104,7 @@ const ListElement = styled.div`
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    padding: 9px 0px;
 `
 
 const LeftContainer = styled.div`

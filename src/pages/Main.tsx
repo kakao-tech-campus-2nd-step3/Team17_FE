@@ -1,15 +1,23 @@
 import styled from '@emotion/styled'
+import { useState } from 'react'
 import Timer from '../components/Timer'
 import ExerciseList from '../components/ExerciseList'
+import mainMock from '../mocks/MainMock'
 
 const Main = () => {
+
+  const [totalTime, setTotalTime] = useState(mainMock.totalTime)
+  const [exerciseList, setExerciseList] = useState(mainMock.exerciseList)
+  // const [diary, setDiary] = useState(mainMock.diary)
+  const [selectedDate, setSelectedDate] = useState(new Date())
+
   return (
     <MainWrapper>
         <DateContainer>
-          <Timer />
+          <Timer totalTime={totalTime} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         </DateContainer>
         <Container>
-          <ExerciseList />
+          <ExerciseList selectedDate={selectedDate} exerciseList={exerciseList} setTotalTime={setTotalTime} setExerciseList={setExerciseList} />
         </Container>
     </MainWrapper>
   )

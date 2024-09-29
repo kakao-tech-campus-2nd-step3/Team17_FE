@@ -1,8 +1,8 @@
 const mainMock = {
-    totalTime: "Time",
+    totalTime: 140000,
     exerciseList: [
         {
-            exerciseId: 1,  // Long
+            exerciseId: 1,  // Long (타입 논의 필요)
             exerciseName: "죽음의 타바타",  // String
             exerciseTime: 600000, // Long 타입의 시간 (밀리초 단위)
             isActive: true  // boolean
@@ -10,7 +10,7 @@ const mainMock = {
         {
             exerciseId: 2,
             exerciseName: "아침 스트레칭",
-            exerciseTime: 600000,
+            exerciseTime: 800000,
             isActive: true
         }
     ],

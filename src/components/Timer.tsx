@@ -3,7 +3,13 @@ import styled from '@emotion/styled';
 import DateSelect from "./DateSelect";
 // import axiosInstance from "../api/axiosInstance";
 
-const Timer: React.FC = () => {
+interface TimerProps {
+    totalTime: number;
+    selectedDate: Date;
+    setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+}
+
+const Timer: React.FC<TimerProps> = () => {
     const [isActive, setIsActive] = useState(false)
     const [time, setTime] = useState(0)
     const [selectedDate, setSelectedDate] = useState(new Date())
