@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useEffect } from 'react';
 
-interface Exercise {
+export interface Exercise {
     exerciseId: number;
     exerciseName: string;
     exerciseTime: number;
@@ -15,7 +15,6 @@ interface ExerciseListProps {
     setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList, setTotalTime, setExerciseList }) => {
 
     const today = new Date()
@@ -27,9 +26,36 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         }
     }, [isToday])
 
-    const handleExerciseClick = () => {
-        
+    useEffect(() => {
+        // exerciseList가 변경될 때마다 전체 시간 업데이트
+        const totalTime = exerciseList.reduce((total, exercise) => total + exercise.exerciseTime, 0)
+        setTotalTime(totalTime)
+    }, [exerciseList, setTotalTime])
+
+    const handleExerciseClick = (exerciseId: number) => {
+        // 운동 항목 클릭시 타이머 시작/멈춤
+        setExerciseList(prevList => 
+            prevList.map(exercise =>
+                exercise.exerciseId === exerciseId
+                    ? { ...exercise, isActive: !exercise.isActive }
+                    : exercise
+            )
+        )
     }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setExerciseList(prevList =>
+                prevList.map(exercise =>
+                    exercise.isActive
+                        ? { ...exercise, exerciseTime: exercise.exerciseTime + 1000 }
+                        : exercise
+                )
+            )
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [exerciseList, setExerciseList])
 
     const handleListMenuClick = (event: React.MouseEvent) => {
         event?.stopPropagation()
@@ -52,7 +78,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         </TitleContainer>
         <ListContainer>
             {exerciseList.map((exercise) => (
-                <ListElement key={exercise.exerciseId} onClick={handleExerciseClick}>
+                <ListElement key={exercise.exerciseId} onClick={() => handleExerciseClick(exercise.exerciseId)}>
                     <LeftContainer>
                         <PlayIcon className='material-symbols-outlined'>play_circle</PlayIcon>
                         <ExerciseTitle>{exercise.exerciseName}</ExerciseTitle>

@@ -14,7 +14,7 @@ const Main = () => {
   return (
     <MainWrapper>
         <DateContainer>
-          <Timer totalTime={totalTime} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+          <Timer totalTime={totalTime} selectedDate={selectedDate} setSelectedDate={setSelectedDate} setExerciseList={setExerciseList} />
         </DateContainer>
         <Container>
           <ExerciseList selectedDate={selectedDate} exerciseList={exerciseList} setTotalTime={setTotalTime} setExerciseList={setExerciseList} />
