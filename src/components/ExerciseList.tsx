@@ -33,13 +33,19 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
     }, [exerciseList, setTotalTime])
 
     const handleExerciseClick = (exerciseId: number) => {
-        // 운동 항목 클릭시 타이머 시작/멈춤
+        const activeExercise = exerciseList.some(exercise => exercise.isActive)
+
         setExerciseList(prevList => 
-            prevList.map(exercise =>
-                exercise.exerciseId === exerciseId
-                    ? { ...exercise, isActive: !exercise.isActive }
-                    : exercise
-            )
+            prevList.map(exercise => {
+                // 다른 운동을 하고 있는 경우, 시작 못함
+                if (activeExercise && !exercise.isActive) {
+                    return exercise
+                }
+                // 클릭한 운동을 시작/정지
+                return exercise.exerciseId === exerciseId
+                ? { ...exercise, isActive: !exercise.isActive }
+                : exercise
+            })
         )
     }
 

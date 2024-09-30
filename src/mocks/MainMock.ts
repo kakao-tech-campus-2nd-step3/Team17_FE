@@ -11,7 +11,7 @@ const mainMock = {
             exerciseId: 2,
             exerciseName: "아침 스트레칭",
             exerciseTime: 800000,
-            isActive: true
+            isActive: false
         }
     ],
     diary: [
