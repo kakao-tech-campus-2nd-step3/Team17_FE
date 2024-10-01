@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import styled from '@emotion/styled';
 import DateSelect from "./DateSelect";
+import { Exercise } from "./ExerciseList";
 // import axiosInstance from "../api/axiosInstance";
 
-const Timer: React.FC = () => {
+interface TimerProps {
+    totalTime: number;
+    selectedDate: Date;
+    setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+    setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>;
+    isAnyActive: boolean;
+}
+
+const Timer: React.FC<TimerProps> = ({ totalTime, setExerciseList, isAnyActive }) => {
     const [isActive, setIsActive] = useState(false)
-    const [time, setTime] = useState(0)
+    const [time, setTime] = useState(totalTime)
     const [selectedDate, setSelectedDate] = useState(new Date())
 
     useEffect(() => {
@@ -22,11 +31,21 @@ const Timer: React.FC = () => {
         return () => clearInterval(interval)
     }, [isActive])
 
-    // 날짜 변경 시 타이머 리셋
+    // useEffect(() => {
+    //     setTime(0)
+    //     setIsActive(false)
+    // }, [selectedDate])
+
     useEffect(() => {
-        setTime(0)
+        setTime(totalTime)
+    }, [totalTime])
+
+    const handleStop = () => {
         setIsActive(false)
-    }, [selectedDate])
+        setExerciseList((prevList: Exercise[]) => {
+            return prevList.map((exercise: Exercise) => ({...exercise, isActive: false}))
+        })
+    }
 
     // 백엔드에서 시간 받아옴
     // const fetchTime = async (date: Date) => {
@@ -39,19 +58,7 @@ const Timer: React.FC = () => {
     //     fetchTime(selectedDate)
     // }, [selectedDate])
 
-    const handleStart = () => {
-        setIsActive(true)
-    };
-
-    const handleStop = () => {
-        setIsActive(false)
-    };
-
-    const handleReset = () => {
-        setIsActive(false)
-        setTime(0)
-    };
-
+    
     const formatTime = (runningTime: number) => {
         const hours = Math.floor((runningTime / 3600000) % 24)
         const minutes = Math.floor((runningTime / 60000) % 60)
@@ -65,10 +72,9 @@ const Timer: React.FC = () => {
             <TimerContainer>
                 <TimerContent>{formatTime(time)}</TimerContent>
             </TimerContainer>
-            <StopButton onClick={handleStop}>운동 종료</StopButton>
-            <button type="button" onClick={handleStart}>Start</button>
-            <button type="button" onClick={handleStop}>Stop</button>
-            <button type="button" onClick={handleReset}>Reset</button>
+            {isAnyActive && (
+                <StopButton onClick={handleStop}>운동 종료</StopButton>
+            )}
         </div>
     );
 };
@@ -104,6 +110,7 @@ const StopButton = styled.div`
     color: #ffffff;
     font-size: 20px;
     cursor: pointer;
+    margin-bottom: 10px;
 `
 
 export default Timer;
