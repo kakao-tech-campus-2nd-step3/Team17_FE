@@ -35,15 +35,16 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
     const handleExerciseClick = (exerciseId: number) => {
         const activeExercise = exerciseList.some(exercise => exercise.isActive)
 
+        // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
+        if (activeExercise ) {
+            return
+        }
+
         setExerciseList(prevList => 
             prevList.map(exercise => {
-                // 다른 운동을 하고 있는 경우, 시작 못함
-                if (activeExercise && !exercise.isActive) {
-                    return exercise
-                }
                 // 클릭한 운동을 시작/정지
                 return exercise.exerciseId === exerciseId
-                ? { ...exercise, isActive: !exercise.isActive }
+                ? { ...exercise, isActive: true }
                 : exercise
             })
         )
