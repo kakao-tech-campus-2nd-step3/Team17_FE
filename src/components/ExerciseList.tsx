@@ -84,9 +84,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         </TitleContainer>
         <ListContainer>
             {exerciseList.map((exercise) => (
-                <ListElement key={exercise.exerciseId} onClick={() => handleExerciseClick(exercise.exerciseId)}>
+                <ListElement key={exercise.exerciseId} isActive={exercise.isActive} onClick={() => handleExerciseClick(exercise.exerciseId)}>
                     <LeftContainer>
-                        <PlayIcon className='material-symbols-outlined'>play_circle</PlayIcon>
+                        <PlayIcon className='material-symbols-outlined'>{exercise.isActive ? 'pause_circle' : 'play_circle'}</PlayIcon>
                         <ExerciseTitle>{exercise.exerciseName}</ExerciseTitle>
                     </LeftContainer>
                     <RightContainer>
@@ -98,6 +98,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         </ListContainer>
     </Wrapper>
   )
+}
+
+interface ListElementProps {
+    isActive: boolean;
 }
 
 const Wrapper = styled.div`
@@ -130,13 +134,15 @@ const ListContainer = styled.div`
     padding: 5px 0px;
 `
 
-const ListElement = styled.div`
+const ListElement = styled.div<ListElementProps>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     padding: 9px 0px;
+    background-color: ${({ isActive }) => (isActive ? '#DCEFFF' : 'transparent')};
+    border-radius: 5px;
 `
 
 const LeftContainer = styled.div`
@@ -152,7 +158,7 @@ const RightContainer = styled.div`
 `
 
 const PlayIcon = styled.div`
-    padding: 0 10px 0 3px ;
+    padding: 0 10px 0 4px ;
     color: #828282;
 `
 
