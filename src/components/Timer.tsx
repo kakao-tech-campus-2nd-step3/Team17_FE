@@ -9,9 +9,10 @@ interface TimerProps {
     selectedDate: Date;
     setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
     setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>;
+    isAnyActive: boolean;
 }
 
-const Timer: React.FC<TimerProps> = ({ totalTime, setExerciseList }) => {
+const Timer: React.FC<TimerProps> = ({ totalTime, setExerciseList, isAnyActive }) => {
     const [isActive, setIsActive] = useState(false)
     const [time, setTime] = useState(totalTime)
     const [selectedDate, setSelectedDate] = useState(new Date())
@@ -71,7 +72,9 @@ const Timer: React.FC<TimerProps> = ({ totalTime, setExerciseList }) => {
             <TimerContainer>
                 <TimerContent>{formatTime(time)}</TimerContent>
             </TimerContainer>
-            <StopButton onClick={handleStop}>운동 종료</StopButton>
+            {isAnyActive && (
+                <StopButton onClick={handleStop}>운동 종료</StopButton>
+            )}
         </div>
     );
 };
@@ -107,6 +110,7 @@ const StopButton = styled.div`
     color: #ffffff;
     font-size: 20px;
     cursor: pointer;
+    margin-bottom: 10px;
 `
 
 export default Timer;
