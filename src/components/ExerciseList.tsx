@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Modal from './Modal';
 
 export interface Exercise {
     exerciseId: number;
@@ -19,6 +20,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
 
     const today = new Date()
     const isToday = selectedDate.toDateString() === today.toDateString()
+
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [exerciseNew, setExerciseNew] = useState("")
+
+    const handleExerciseNewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setExerciseNew(event.target.value)
+    }
 
     useEffect(() => {
         if (!isToday) {
@@ -77,11 +85,27 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         return `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
     }
 
+    const handleAddClick = () => {
+        setIsModalOpen(true)
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
+        setExerciseNew("")
+    }
+
+    const handleExerciseSubmit = () => {
+        // 서버로 새 운동이름 post 코드 작성
+        // console.log(exerciseNew)
+        setIsModalOpen(false)
+        setExerciseNew("")
+    }
+
   return (
     <Wrapper>
         <TitleContainer>
             <Title>상세 운동 내역</Title>
-            <AddButton>+</AddButton>
+            <AddButton onClick={handleAddClick}>+</AddButton>
         </TitleContainer>
         <ListContainer>
             {exerciseList.map((exercise) => (
@@ -97,6 +121,14 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
                 </ListElement>
             ))}
         </ListContainer>
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            <AddTitle>운동이름</AddTitle>
+            <AddExerciseName placeholder='ex) 아침 스트레칭, 복근 운동' value={exerciseNew} onChange={handleExerciseNewChange} />
+            <ModalBtnContainer>
+                <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
+                <DoneBtn onClick={handleExerciseSubmit}>완료</DoneBtn>
+            </ModalBtnContainer>
+        </Modal>
     </Wrapper>
   )
 }
@@ -179,6 +211,42 @@ const MenuIcon = styled.div`
     color: #828282;
     font-weight: 300;
     padding: 0 0 0 10px;
+`
+
+const AddTitle = styled.div`
+    font-size: 20px;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    box-sizing: border-box;
+`
+
+const AddExerciseName = styled.input`
+    width: 96%;
+    padding: 0px 7px;
+    margin: 10px 0px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+`
+
+const ModalBtnContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+`
+
+const CancelBtn = styled.div`
+    padding: 5px 15px;
+    color: #969393;
+    cursor: pointer;
+`
+
+const DoneBtn = styled.div`
+    padding: 5px;
+    color: #6D86CB;
+    cursor: pointer;
 `
 
 export default ExerciseList
