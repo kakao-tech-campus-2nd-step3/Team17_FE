@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useState } from 'react'
@@ -6,6 +7,7 @@ import ExerciseList from '../components/ExerciseList'
 import mainMock from '../mocks/MainMock'
 import DiaryCreate from '../components/DiaryCreate'
 import axiosInstance from '../api/axiosInstance'
+import TodayDiary from '../components/TodayDiary'
 
 const Main = () => {
 
@@ -16,6 +18,7 @@ const Main = () => {
   const isAnyActive = exerciseList.some(exercise => exercise.isActive)
 
   const [newDiary, setNewDiary] = useState("")
+  const [diaryData, setDiaryData] = useState(mainMock.diary)
 
   const handleDiarySubmit = async () => {
     try {
@@ -40,13 +43,17 @@ const Main = () => {
         <Container>
           <DiaryCreate newDiary={newDiary} setNewDiary={setNewDiary} onSubmit={handleDiarySubmit} />
         </Container>
+        <Container>
+          <TodayDiary diaryData={diaryData} />
+        </Container>
     </MainWrapper>
   )
 }
 
 const MainWrapper = styled.div`
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 55px);
+    overflow-y: auto;
     background-color: #f2f2f6;
     padding: 20px;
     box-sizing: border-box;
