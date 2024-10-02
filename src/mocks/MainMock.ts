@@ -5,13 +5,15 @@ const mainMock = {
             exerciseId: 1,  // Long (타입 논의 필요)
             exerciseName: "죽음의 타바타",  // String
             exerciseTime: 600000, // Long 타입의 시간 (밀리초 단위)
-            isActive: true  // boolean
+            isActive: true,  // boolean
+            startTime: "2024-10-02T07:30:00Z"
         },
         {
             exerciseId: 2,
             exerciseName: "아침 스트레칭",
             exerciseTime: 800000,
-            isActive: false
+            isActive: false,
+            startTime: null
         }
     ],
     diary: [

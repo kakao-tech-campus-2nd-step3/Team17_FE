@@ -1,12 +1,15 @@
+/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react';
 import Modal from './Modal';
+import axiosInstance from '../api/axiosInstance';
 
 export interface Exercise {
     exerciseId: number;
     exerciseName: string;
     exerciseTime: number;
     isActive: boolean;
+    startTime: string | null;
 }
 
 interface ExerciseListProps {
@@ -40,11 +43,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
         setTotalTime(totalTime)
     }, [exerciseList, setTotalTime])
 
-    const handleExerciseClick = (exerciseId: number) => {
+    
+
+    const handleExerciseClick = async (exerciseId: number) => {
         const activeExercise = exerciseList.some(exercise => exercise.isActive)
 
         // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
-        if (activeExercise ) {
+        if (activeExercise) {
             return
         }
 
@@ -56,6 +61,17 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ selectedDate, exerciseList,
                 : exercise
             })
         )
+
+        // 서버에 시작한 운동 post 코드 작성하기 (초안)
+        try {
+            const response = await axiosInstance.post(`/api/exercise/${exerciseId}`, {
+                exerciseId,
+                startTime: new Date().toISOString
+            })
+            console.log('운동 시작 전송 성공', response.data)
+        } catch (error) {
+            console.error('운동 시작 전송 실패', error)
+        }
     }
 
     useEffect(() => {
