@@ -4,20 +4,20 @@ import Footer from './components/Footer'
 import AppRoutes from './routes/AppRoutes'
 
 const App = () => {
-    const location = useLocation()
+  const location = useLocation()
 
-    return (
-        <div className="App">
-            <AppRoutes />
-            {location.pathname !== '/login' && <Footer />}
-        </div>
-    )
+  return (
+    <div className="App">
+      <AppRoutes />
+      {location.pathname !== '/login' && <Footer />}
+    </div>
+  )
 }
 
 const AppWrapper = (): JSX.Element => (
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 )
 
 export default AppWrapper
