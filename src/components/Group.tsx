@@ -6,15 +6,31 @@ import { Tag } from '../mocks/TagMock';
 interface GroupProps {
   group: Team; 
   showMenuButton: boolean;
-  onMenuClick: (group: Team) => void; 
+  onCardClick: (group: Team) => void; 
+  onButtonClick?: (group: Team) => void;
 }
 
-const Group: React.FC<GroupProps> = ({ group, showMenuButton, onMenuClick }) => {
+const Group: React.FC<GroupProps> = ({ group, showMenuButton, onCardClick, onButtonClick }) => {
     const getTagAttributes = (tags: Tag[]): string[] => {
-        return tags.map(tag => tag.tagAttribute);
-      };  
+        return tags.map(tag => tag.tagName);
+      };
+    // Group card 클릭 이벤트 핸들러
+    const handleCardClick = () => {
+        onCardClick(group);
+    }; 
+    
+    // Menu 버튼 클릭 이벤트 핸들러
+    const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation(); 
+        if (onButtonClick) {
+            onButtonClick(group);
+        }
+    };
+    Group.defaultProps = {
+        onButtonClick: () => {} 
+    };
   return (
-    <GroupCard>
+    <GroupCard onClick={handleCardClick}>
       <GroupName>{group.teamName}</GroupName>
       <GroupDetails>{group.leaderNickname}</GroupDetails>
       <GroupInfo>{group.currentParticipants}/{group.maxParticipants}명
@@ -22,7 +38,7 @@ const Group: React.FC<GroupProps> = ({ group, showMenuButton, onMenuClick }) => 
       </GroupInfo>
       <TagLine>#{getTagAttributes(group.tagList).join(' # ')}</TagLine>
       {showMenuButton && (
-        <MenuButton onClick={() => onMenuClick(group)}>
+        <MenuButton onClick={handleButtonClick}>
         <Icon className="material-symbols-outlined">more_vert</Icon>
       </MenuButton>
       )}

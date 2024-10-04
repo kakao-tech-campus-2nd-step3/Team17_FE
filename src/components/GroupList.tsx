@@ -6,10 +6,15 @@ import { Team } from '../mocks/SearchGroupMock';
 interface GroupListProps {
   groups: Team[];
   showMenuButton: boolean;
-  onGroupClick: (group: Team) => void;
+  onCardClick: (group: Team) => void;
+  onButtonClick?: (group: Team) => void;
 }
 
-const GroupList: React.FC<GroupListProps> = ({ groups, showMenuButton, onGroupClick }) => {
+const GroupList: React.FC<GroupListProps> = ({ groups, showMenuButton, onCardClick, onButtonClick }) => {
+    GroupList.defaultProps = {
+        onButtonClick: () => {} 
+    };
+    
     return (
         <GroupContainer>
           {groups.map(group => (
@@ -17,7 +22,8 @@ const GroupList: React.FC<GroupListProps> = ({ groups, showMenuButton, onGroupCl
               key={group.teamName}
               group={group}
               showMenuButton={showMenuButton}
-              onMenuClick={onGroupClick}
+              onCardClick={onCardClick}
+              onButtonClick={onButtonClick}
             />
           ))}
         </GroupContainer>

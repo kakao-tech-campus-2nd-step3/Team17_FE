@@ -28,18 +28,18 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별",
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 11,
-                      tagName : "운동강도",
-                      tagAttribute: "약"
+                      tagName : "약",
+                      tagAttribute: "운동강도"
                   }
               ]
           },
@@ -51,10 +51,10 @@ const searchGroupMock = {
               currentParticipants : 3,
               password : null,
               tagList: [
-                  { tagId: 1, tagName: "성별", tagAttribute: "여성" },
-                  { tagId: 2, tagName: "성별", tagAttribute: "남성" },
-                  { tagId: 8, tagName: "나이", tagAttribute: "전연령" },
-                  { tagId: 12, tagName: "운동강도", tagAttribute: "자유" }
+                  { tagId: 1, tagName: "여성", tagAttribute: "성별" },
+                  { tagId: 2, tagName: "남성", tagAttribute: "성별" },
+                  { tagId: 8, tagName: "전연령", tagAttribute: "나이" },
+                  { tagId: 12, tagName: "자유", tagAttribute: "운동강도" }
               ]
           },
           {
@@ -67,23 +67,23 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 2,
-                      tagName: "성별",
-                      tagAttribute: "남성"
+                      tagName: "남성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 5,
-                      tagName: "나이",
-                      tagAttribute: "30대"
+                      tagName: "30대",
+                      tagAttribute: "나이"
                   },
               ]
           },
@@ -97,18 +97,18 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 9,
-                      tagName: "운동강도",
-                      tagAttribute: "강"
+                      tagName: "강",
+                      tagAttribute: "운동강도"
                   },
               ]
           },
@@ -122,23 +122,23 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 2,
-                      tagName: "성별",
-                      tagAttribute: "남성"
+                      tagName: "남성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 5,
-                      tagName: "나이",
-                      tagAttribute: "30대"
+                      tagName: "30대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId : 9,
-                      tagName : "운동강도",
-                      tagAttribute : "강"
+                      tagName : "강",
+                      tagAttribute : "운동강도"
                   }
               ]
           },
@@ -152,23 +152,23 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 2,
-                      tagName: "성별",
-                      tagAttribute: "남성"
+                      tagName: "남성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 8,
-                      tagName: "나이",
-                      tagAttribute: "전연령"
+                      tagName: "전연령",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId : 12,
-                      tagName : "운동강도",
-                      tagAttribute: "자유"
+                      tagName : "자유",
+                      tagAttribute: "운동강도"
                   }
               ]
           },
@@ -182,8 +182,8 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 3,
-                      tagName: "성별",
-                      tagAttribute: "무관"
+                      tagName: "무관",
+                      tagAttribute: "성별"
                   },
               ]
           },
@@ -197,13 +197,13 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 3,
-                      tagName: "성별",
-                      tagAttribute: "무관"
+                      tagName: "무관",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 12,
-                      tagName: "운동강도",
-                      tagAttribute: "자유"
+                      tagName: "자유",
+                      tagAttribute: "운동강도"
                   },
               ]
           },
@@ -217,18 +217,18 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 3,
-                      tagName: "성별",
-                      tagAttribute: "무관"
+                      tagName: "무관",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 11,
-                      tagName: "운동강도",
-                      tagAttribute: "약"
+                      tagName: "약",
+                      tagAttribute: "운동강도"
                   },
               ]
           },
@@ -242,23 +242,23 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 6,
-                      tagName: "나이",
-                      tagAttribute: "40대"
+                      tagName: "40대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 9,
-                      tagName: "운동강도",
-                      tagAttribute: "약"
+                      tagName: "약",
+                      tagAttribute: "운동강도"
                   },
                   {
                       tagId : 10,
-                      tagName : "운동강도",
-                      tagAttribute: "중"
+                      tagName : "중",
+                      tagAttribute: "운동강도"
                   }
               ]
           },
@@ -272,23 +272,23 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 1,
-                      tagName: "성별",
-                      tagAttribute: "여성"
+                      tagName: "여성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 2,
-                      tagName: "성별",
-                      tagAttribute: "남성"
+                      tagName: "남성",
+                      tagAttribute: "성별"
                   },
                   {
                       tagId: 4,
-                      tagName: "나이",
-                      tagAttribute: "20대"
+                      tagName: "20대",
+                      tagAttribute: "나이"
                   },
                   {
                       tagId: 10,
-                      tagName: "운동강도",
-                      tagAttribute: "중"
+                      tagName: "중",
+                      tagAttribute: "운동강도"
                   },
               ]
           },
@@ -302,8 +302,8 @@ const searchGroupMock = {
               tagList: [
                   {
                       tagId: 3,
-                      tagName: "성별",
-                      tagAttribute: "무관"
+                      tagName: "무관",
+                      tagAttribute: "성별"
                   },
 
               ]

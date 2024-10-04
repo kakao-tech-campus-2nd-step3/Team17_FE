@@ -41,6 +41,10 @@ const MyGroup = () => {
     setModalOpen(false);
   };
 
+  const handleMenuClick = (group : Team) => {
+    alert(`${group.teamName} 입장하기`);
+  }
+
   const modalContent = groupType === "joined" ? "그룹 탈퇴하기" : "그룹 삭제하기";
   
   // 백엔드 api 확인 후 그룹 구조 변경
@@ -54,7 +58,7 @@ const MyGroup = () => {
           <option value="created">내가 만든 그룹</option>
         </select>
       </DropdownContainer>
-      <GroupList groups={filteredGroups} showMenuButton onGroupClick={handleGroupClick} />
+      <GroupList groups={filteredGroups} showMenuButton onCardClick={handleMenuClick} onButtonClick={handleGroupClick} />
       {/* 첫 번째 모달 */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
       <ModalButton onClick={openSecondModal}>{modalContent}</ModalButton>
