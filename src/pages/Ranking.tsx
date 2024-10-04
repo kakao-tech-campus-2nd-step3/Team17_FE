@@ -2,11 +2,16 @@
 import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 import { Duration } from "luxon"
+import { useNavigate, useParams } from "react-router"
 import DateSelect from "../components/DateSelect"
 import RankingMock from "../mocks/RankingMock"
 import axiosInstance from "../api/axiosInstance"
+import chatbubble from '../assets/chatbubble.svg'
 
 const Ranking = () => {
+
+    const { groupId } = useParams()
+    const navigate = useNavigate()
 
     const [selectedDate, setSelectedDate] = useState(new Date())
     const [rankData, setRankData] = useState(RankingMock)
@@ -19,24 +24,30 @@ const Ranking = () => {
         return `${hours}:${minutes}:${seconds}`
     }
 
-    const teamId = 1
 
     useEffect(() => {
         const fetchRankingData = async () => {
             try {
-                const response = await axiosInstance.get(`/api/team/${teamId}/ranking?page=0&size=7&sort=time,asc&year=2024&month=7&day=26`)
+                const response = await axiosInstance.get(`/api/team/${groupId}/ranking?page=0&size=7&sort=time,asc&year=2024&month=7&day=26`)
                 setRankData(response.data)
             } catch (error) {
                 console.error('랭크 데이터 가져오기 실패', error)
             }
         }
         fetchRankingData()
-    }, [])
+    }, [groupId])
+
+    const handleBeforeClick = () => {
+        navigate('/mygroup')
+    }
+    const handleChatClick = () => {
+        navigate(`/chat/${groupId}`)
+    }
 
   return (
     <Wrapper>
         <TitleContainer>
-            <BeforeButton>&lt;</BeforeButton>
+            <BeforeButton onClick={handleBeforeClick}>&lt;</BeforeButton>
             <Title>매일 운동 도전</Title>
             <Space></Space>
         </TitleContainer>
@@ -64,17 +75,21 @@ const Ranking = () => {
                 <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
             </MyRankElement>
         </MyRank>
+        <ChatButton onClick={handleChatClick}>
+            <ChatIcon src={chatbubble} alt="chat icon" />
+        </ChatButton>
     </Wrapper>
   )
 }
 
 
 const Wrapper = styled.div`
-  width: 100%;
-  height: calc(100vh - 55px);
-background-color: #f2f2f6;
-  padding: 20px;
-  box-sizing: border-box;
+    width: 100%;
+    height: calc(100vh - 55px);
+    background-color: #f2f2f6;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
 `
 
 const TitleContainer = styled.div`
@@ -88,6 +103,7 @@ const BeforeButton = styled.div`
     font-size: 24px;
     font-weight: 500;
     color: #5673C1;
+    cursor: pointer;
 `
 
 const Title = styled.div`
@@ -187,5 +203,28 @@ const RankerTime = styled.div`
     color: #4A4A4A;
     font-size: 18px;
 `
+
+const ChatButton = styled.div`
+    position: absolute;
+    right: -10px;
+    bottom: 37px;
+    transform: translateX(-50%);
+    background-color: #B5C3E9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+    cursor: pointer;
+`
+
+const ChatIcon = styled.img`
+    width: 33px;
+    height: 33px;
+    padding: 13px 11px 13px 14px;
+    
+
+`
+
+
 
 export default Ranking

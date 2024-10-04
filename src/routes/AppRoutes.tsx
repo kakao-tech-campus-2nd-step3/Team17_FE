@@ -6,6 +6,7 @@ import SearchGroup from '../pages/SearchGroup'
 import Market from '../pages/Market'
 import MyPage from '../pages/MyPage'
 import Ranking from '../pages/Ranking'
+import Chatting from '../pages/Chatting'
 
 const AppRoutes = () => {
   return (
@@ -17,7 +18,8 @@ const AppRoutes = () => {
         <Route path="/searchgroup" element={<SearchGroup />} />
         <Route path="/market" element={<Market />} />
         <Route path="/mypage" element={<MyPage />} />
-        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/ranking/:groupId" element={<Ranking />} />
+        <Route path="/chat/:groupId" element={<Chatting />} />
       </Routes>
     </div>
   )
