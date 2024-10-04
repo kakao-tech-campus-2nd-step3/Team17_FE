@@ -84,7 +84,7 @@ const MenuButton = styled.button`
 const Icon = styled.div`
     color: #828282;
     font-weight: 300;
-    padding: 5px 0 0 10px;
+    padding: 5px 0 0 0;
 `;
 
 const LockIcon = styled.span`
