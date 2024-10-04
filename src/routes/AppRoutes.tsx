@@ -8,15 +8,15 @@ import MyPage from '../pages/MyPage'
 
 const AppRoutes = () => {
   return (
-    <div className='AppRoutes'>
-        <Routes>
-          <Route path='/' element={<Main />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/mygroup' element={<MyGroup />} />
-          <Route path='/searchgroup' element={<SearchGroup />} />
-          <Route path='/market' element={<Market />} />
-          <Route path='/mypage' element={<MyPage />} />
-        </Routes>
+    <div className="AppRoutes">
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/mygroup" element={<MyGroup />} />
+        <Route path="/searchgroup" element={<SearchGroup />} />
+        <Route path="/market" element={<Market />} />
+        <Route path="/mypage" element={<MyPage />} />
+      </Routes>
     </div>
   )
 }
