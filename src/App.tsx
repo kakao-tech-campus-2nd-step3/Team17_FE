@@ -1,17 +1,23 @@
 import './App.css'
-import { BrowserRouter } from 'react-router-dom'
-import Footer from './components/Footer';
-import AppRoutes from './routes/AppRoutes';
+import { BrowserRouter, useLocation } from 'react-router-dom'
+import Footer from './components/Footer'
+import AppRoutes from './routes/AppRoutes'
 
 const App = () => {
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <AppRoutes />
-        <Footer />
-      </div>
-    </BrowserRouter>
-  );
-};
+  const location = useLocation()
 
-export default App
+  return (
+    <div className="App">
+      <AppRoutes />
+      {location.pathname !== '/login' && <Footer />}
+    </div>
+  )
+}
+
+const AppWrapper = (): JSX.Element => (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+)
+
+export default AppWrapper

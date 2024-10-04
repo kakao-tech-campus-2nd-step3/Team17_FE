@@ -1,33 +1,32 @@
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 
-import LOGO from '../assets/logo.png';
-import KAKAO_LOGIN from '../assets/kakao.png';
+import LOGO from '../assets/logo.png'
+import KAKAO_LOGIN from '../assets/kakao.png'
 
-const Login = ()=>
-  {
-      // oauth 요청 URL
-      const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=831c88c18690d9ffa567b4a7da7f8c0e&redirect_uri=http://localhost:8080/api/oauth/login
+const Login = () => {
+  // oauth 요청 URL
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=831c88c18690d9ffa567b4a7da7f8c0e&redirect_uri=http://localhost:8080/api/oauth/login
 `
-      const handleLogin = ()=>{
-          window.location.href = kakaoURL
-      }; 
-
-return (
-  <LoginWrapper>
-    <Title>누구나 집에서 쉽게 즐기는 홈트</Title>
-    <SubTitle>홈트라이</SubTitle>
-    <img src={LOGO} alt="로그인 로고" />
-    <KakaoButton onClick={handleLogin}>
-      <img src={KAKAO_LOGIN} alt="카카오 로그인" />
-    </KakaoButton>
-    <Describe>카카오 로그인을 통해 &lsquo;홈트라이&lsquo;를 즐겨보세요</Describe>
-  </LoginWrapper>
-);
+  const handleLogin = () => {
+    window.location.href = kakaoURL
   }
 
+  return (
+    <LoginWrapper>
+      <Title>누구나 집에서 쉽게 즐기는 홈트</Title>
+      <SubTitle>홈트라이</SubTitle>
+      <img src={LOGO} alt="로그인 로고" />
+      <KakaoButton onClick={handleLogin}>
+        <img src={KAKAO_LOGIN} alt="카카오 로그인" />
+      </KakaoButton>
+      <Describe>
+        카카오 로그인을 통해 &lsquo;홈트라이&lsquo;를 즐겨보세요
+      </Describe>
+    </LoginWrapper>
+  )
+}
 
-export default Login;
-
+export default Login
 
 const LoginWrapper = styled.div`
   display: flex;
@@ -36,22 +35,22 @@ const LoginWrapper = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  background-color: #F2F2F6;
+  background-color: #f2f2f6;
   padding: 50px 15px 20px 15px;
   box-sizing: border-box;
-`;
+`
 
 const Title = styled.h1`
   font-size: 18px;
-  color: #7E88A2;
-`;
+  color: #7e88a2;
+`
 
 const SubTitle = styled.h2`
   font-size: 32px;
-  color: #5A80E2;
-  margin-top : 10px;
-  margin-bottom : 40px;
-`;
+  color: #5a80e2;
+  margin-top: 10px;
+  margin-bottom: 40px;
+`
 
 const KakaoButton = styled.button`
   border: none;
@@ -60,11 +59,11 @@ const KakaoButton = styled.button`
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-top : 50px;
-`;
+  margin-top: 50px;
+`
 
 const Describe = styled.p`
   font-size: 12px;
   color: #888888;
   margin-top: 5px;
-`;
+`

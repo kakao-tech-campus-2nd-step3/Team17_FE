@@ -12,8 +12,17 @@ src
  ┃ ┗ logo.png
  ┣ components
  ┃ ┣ DateSelect.tsx
+ ┃ ┣ DiaryCreate.tsx
+ ┃ ┣ ExerciseList.tsx
  ┃ ┣ Footer.tsx
- ┃ ┗ Timer.tsx
+ ┃ ┣ Modal.tsx
+ ┃ ┣ Timer.tsx
+ ┃ ┗ TodayDiary.tsx
+ ┣ mocks
+ ┃ ┣ MainMock.ts
+ ┃ ┣ MyGroupMock.ts
+ ┃ ┣ SearchGroupMock.ts
+ ┃ ┗ TagMock.ts
  ┣ pages
  ┃ ┣ Login.tsx
  ┃ ┣ Main.tsx

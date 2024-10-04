@@ -1,46 +1,52 @@
-import { useEffect, useRef, useState } from 'react';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/style.css';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-import styled from '@emotion/styled';
+import { useEffect, useRef, useState } from 'react'
+import { DayPicker } from 'react-day-picker'
+import 'react-day-picker/style.css'
+import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
+import styled from '@emotion/styled'
 
 interface DateSelectProps {
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
+  selectedDate: Date
+  setSelectedDate: (date: Date) => void
 }
 
-const DateSelect: React.FC<DateSelectProps> = ({ selectedDate, setSelectedDate }) => {
+const DateSelect: React.FC<DateSelectProps> = ({
+  selectedDate,
+  setSelectedDate,
+}) => {
   const formattedDate = format(selectedDate, 'yyyy년 M월 d일 (EEE)', {
     locale: ko,
-  });
+  })
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
 
   const handlePrev = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
-  };
+  }
 
   const handleNext = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))
-  };
+  }
 
   const handleDateClick = () => {
     setIsCalendarOpen(!isCalendarOpen)
-  };
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
         setIsCalendarOpen(false)
       }
-    };
+    }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-    };
-  }, []);
+    }
+  }, [])
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -67,10 +73,10 @@ const DateSelect: React.FC<DateSelectProps> = ({ selectedDate, setSelectedDate }
         </CalendarContainer>
       )}
     </Wrapper>
-  );
-};
+  )
+}
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div``
 
 const DateSelectContainer = styled.div`
   display: flex;
@@ -78,20 +84,20 @@ const DateSelectContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0px 25px;
-`;
+`
 
 const DateSelecter = styled.div`
   font-size: 25px;
   cursor: pointer;
   font-weight: 500;
-`;
+`
 
 const DateSelection = styled.div`
   font-size: 20px;
   padding: 3px 40px;
   cursor: pointer;
   font-weight: 500;
-`;
+`
 
 const CalendarContainer = styled.div`
   background-color: #ffffff;
@@ -101,6 +107,6 @@ const CalendarContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   z-index: 10;
-`;
+`
 
-export default DateSelect;
+export default DateSelect

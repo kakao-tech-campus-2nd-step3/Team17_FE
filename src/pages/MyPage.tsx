@@ -1,3 +1,4 @@
+// prettier-ignore
 const MyPage = () => {
   return (
     <div className='MyPage'>

@@ -1,3 +1,4 @@
+// prettier-ignore
 const Market = () => {
   return (
     <div className='Market'>
