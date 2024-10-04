@@ -1,10 +1,9 @@
 import './App.css'
 import { BrowserRouter, useLocation } from 'react-router-dom'
-import Footer from './components/Footer';
-import AppRoutes from './routes/AppRoutes';
+import Footer from './components/Footer'
+import AppRoutes from './routes/AppRoutes'
 
 const App = () => {
-
   const location = useLocation()
 
   return (
@@ -12,8 +11,8 @@ const App = () => {
       <AppRoutes />
       {location.pathname !== '/login' && <Footer />}
     </div>
-  );
-};
+  )
+}
 
 const AppWrapper = (): JSX.Element => (
   <BrowserRouter>
