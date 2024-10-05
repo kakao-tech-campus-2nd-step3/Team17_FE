@@ -19,7 +19,7 @@ const searchGroupMock = {
       size: 7,
       content: [
           {
-              teamName: "매일매일매일매일매일 홈트 시작",
+              teamName: "매일매일 홈트 시작",
               leaderNickname: "나만의 홈트홈트홈트홈트홈트홈트홈트홈트",
               teamDescription: "매일 1시간씩 운동하는 것을 목표로 합니다. 여러분 운동을 하는건 매우 중요한 일입니다. 다같이 운동을 합시다.",
               maxParticipants: 6,

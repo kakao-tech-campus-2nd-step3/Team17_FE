@@ -58,9 +58,9 @@ const MyGroup = () => {
   
   // 백엔드 api 확인 후 그룹 구조 변경
   return (
-    <Wrapper>
-      <Container>
-      <Title>나의 그룹</Title>
+    <PageWrapper>
+      <PageContainer>
+      <PageTitle>나의 그룹</PageTitle>
       <DropdownContainer>
         <select value={groupType} onChange={handleSelectChange}>
           <option value="joined">가입한 그룹</option>
@@ -68,7 +68,6 @@ const MyGroup = () => {
         </select>
       </DropdownContainer>
       {renderGroups()}
-      <GroupList groups={filteredGroups} showMenuButton onCardClick={handleMenuClick} onButtonClick={handleGroupClick} />
       {/* 첫 번째 모달 */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
       <ModalButton onClick={openSecondModal}>{modalContent}</ModalButton>
@@ -76,23 +75,22 @@ const MyGroup = () => {
 
       {/* 두 번째 모달 */}
       <Modal isOpen={isSecondModalOpen} onClose={closeSecondModal}>
-        <AddTitle>{modalContent}</AddTitle>
-        <AddExerciseName placeholder={`'${selectedGroup?.teamName}'을 ${groupType === "joined" ? "탈퇴하시겠습니까?" : "삭제하시겠습니까?"}`} />
+        <ModalTitle>{modalContent}</ModalTitle>
+        <ModalText placeholder={`'${selectedGroup?.teamName}'을 ${groupType === "joined" ? "탈퇴하시겠습니까?" : "삭제하시겠습니까?"}`} />
         <ModalBtnContainer>
           <CancelBtn onClick={closeSecondModal}>취소</CancelBtn>
           <DoneBtn>완료</DoneBtn>
         </ModalBtnContainer>
       </Modal>
-      </Container>
-    </Wrapper>
+      </PageContainer>
+    </PageWrapper>
   );
 };
 
-
 export default MyGroup;
 
-
-const Wrapper = styled.div`
+/* Page */
+const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -104,7 +102,7 @@ const Wrapper = styled.div`
   overflow-x: hidden;
 `;
 
-const Container = styled.div`
+const PageContainer = styled.div`
   padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
@@ -114,12 +112,13 @@ const Container = styled.div`
   margin: 20px 0px;
 `
 
-const Title = styled.p`
-  font-size: 24px;
+const PageTitle = styled.p`
+  font-size: 22px;
   margin-bottom: 20px;
   font-weight: bold;
 `;
 
+/* Dropdown */
 const DropdownContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -135,7 +134,8 @@ const DropdownContainer = styled.div`
   }
 `;
 
-const AddTitle = styled.div`
+/* Modal */
+const ModalTitle = styled.div`
     font-size: 20px;
     width: 100%;
     text-align: left;
@@ -143,11 +143,10 @@ const AddTitle = styled.div`
     box-sizing: border-box;
 `
 
-const AddExerciseName = styled.input`
-    width: 96%;
+const ModalText = styled.input`
+    width: 90%;
     padding: 0px 7px;
     margin: 10px 0px;
-    box-sizing: border-box;
     border: none;
     outline: none;
 `

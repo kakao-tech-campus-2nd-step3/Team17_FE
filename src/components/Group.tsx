@@ -71,7 +71,7 @@ const GroupName = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 90%;
+  width: 80%;
 `;
 
 const GroupDetails = styled.div`

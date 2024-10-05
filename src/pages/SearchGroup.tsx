@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, SetStateAction } from 'react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom'
 import tagMock from '../mocks/TagMock';
 import searchGroupMock, { Team } from '../mocks/SearchGroupMock';
 import GroupList from '../components/GroupList';
@@ -13,6 +14,7 @@ const SearchGroup = () => {
   const [modalType, setModalType] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<Team | null>(null);
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handlePasswordChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setPassword(event.target.value);
@@ -68,10 +70,16 @@ const SearchGroup = () => {
     if (filteredGroups.length === 0) {
       return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>;
     }
-    return <GroupList groups={filteredGroups} showMenuButton={false} onCardClick={handleGroupClick} />;
+    return <GroupList groups={searchGroupMock.Page.content.filter(group => group.teamName.toLowerCase().includes(searchTerm.toLowerCase()))}
+                   showMenuButton={false} onCardClick={handleGroupClick} />
+  };
+
+  const navigateToAddGroup = () => { 
+    navigate('/addGroup');
   };
 
   const renderModalContent = () => {
+    // 추후 페이지네이션 처리
     if (!selectedGroup) {
       return <p>Loading...</p>;
     }
@@ -100,19 +108,31 @@ const SearchGroup = () => {
       case 'info':
         return (
           <Modal isOpen onClose={closeModal}>
-            <ModalContainer>
-          <ModalTitle>{selectedGroup.teamName}</ModalTitle>
-          <ModalNum>{selectedGroup.currentParticipants}/{selectedGroup.maxParticipants}명
-          {selectedGroup.password && <LockIcon className="material-symbols-outlined">lock</LockIcon>}</ModalNum></ModalContainer>
-          <ModlaCon>
-          <ModalText><ModalBold>그룹장 : </ModalBold>{selectedGroup.leaderNickname}</ModalText>
-          <ModalText><ModalBold>태그 : </ModalBold>#{selectedGroup.tagList.map(tag => tag.tagName).join(' #')}</ModalText>
-          <ModalText><ModalBold>그룹소개 : </ModalBold>{selectedGroup.teamDescription}</ModalText>
-          <ModalBtnContainer>
-            <CancelBtn onClick={closeModal}>취소</CancelBtn>
-            <DoneBtn onClick={() => joinGroup(selectedGroup)}>그룹참여</DoneBtn>
-          </ModalBtnContainer>
-          </ModlaCon>
+            <ModalHeader>
+              <ModalTitle>{selectedGroup.teamName}</ModalTitle>
+              <ModalParticipantCount>
+                {selectedGroup.currentParticipants}/{selectedGroup.maxParticipants}명
+                {selectedGroup.password && <LockIcon className="material-symbols-outlined">lock</LockIcon>}
+              </ModalParticipantCount>
+            </ModalHeader>
+            <ModlaContent>
+              <ModalText>
+                <ModalBold>그룹장 : </ModalBold>
+                {selectedGroup.leaderNickname}
+              </ModalText>
+              <ModalText>
+                <ModalBold>태그 : </ModalBold>
+                #{selectedGroup.tagList.map(tag => tag.tagName).join(' #')}
+              </ModalText>
+              <ModalText>
+                <ModalBold>그룹소개 : </ModalBold>
+                {selectedGroup.teamDescription}
+              </ModalText>
+              <ModalBtnContainer>
+                <CancelBtn onClick={closeModal}>취소</CancelBtn>
+                <DoneBtn onClick={() => joinGroup(selectedGroup)}>그룹참여</DoneBtn>
+              </ModalBtnContainer>
+            </ModlaContent>
           </Modal>
         );
       default:
@@ -122,26 +142,24 @@ const SearchGroup = () => {
   };
 
   return (
-    <Wrapper>
-      <Container>
-        <Title>그룹 탐색</Title>
+    <PageWrapper>
+      <PageContainer>
+        <PageTitle>그룹 탐색</PageTitle>
         <SearchBar onChange={handleSearchChange} value={searchTerm} />
         <TagFilter tags={tagMock.tagList} activeFilters={activeFilters} toggleFilter={toggleFilter} />
         {renderGroups()}
-        <GroupList groups={searchGroupMock.Page.content.filter(group => group.teamName.toLowerCase().includes(searchTerm.toLowerCase()))}
-                   showMenuButton={false} onCardClick={handleGroupClick} />
         {renderModalContent()}
-        <AddButton>+</AddButton>
-      </Container>
-    </Wrapper>
+        <AddButton onClick = {navigateToAddGroup}>+</AddButton>
+      </PageContainer>
+    </PageWrapper>
   );
 };
 
 
 export default SearchGroup;
 
-
-const Wrapper = styled.div`
+/* page */
+const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -153,7 +171,7 @@ const Wrapper = styled.div`
   overflow-x: hidden;
 `;
 
-const Container = styled.div`
+const PageContainer = styled.div`
   padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
@@ -163,8 +181,8 @@ const Container = styled.div`
   margin: 20px 0px;
 `
 
-const Title = styled.p`
-  font-size: 24px;
+const PageTitle = styled.p`
+  font-size: 22px;
   margin-bottom: 20px;
   font-weight: bold;
 `;
@@ -187,7 +205,8 @@ const AddButton = styled.button`
   }
 `;
 
-const ModalContainer = styled.div`
+/* Modal */
+const ModalHeader = styled.div`
   position : relative;
   width : 100%;
   `
@@ -198,14 +217,14 @@ const ModalTitle = styled.div`
   float : left;
 `;
 
-const ModalNum = styled.div`
+const ModalParticipantCount = styled.div`
   font-size: 12px;
   color : #8E8E8E;
   padding: 10px;
   margin : 6px 0 0 0;
 `;
 
-const ModlaCon = styled.div`
+const ModlaContent = styled.div`
   width : 100%;
   box-sizing: border-box;
 `;
@@ -228,7 +247,6 @@ const ModalText = styled.p`
   width : 100%;
 `;
 
-
 const Input = styled.input`
   border : transparent;
   border-bottom : 1px solid #B5C3E9;
@@ -238,7 +256,6 @@ const Input = styled.input`
   box-sizing: border-box;
   outline: none;
 `;
-
 
 const ModalBtnContainer = styled.div`
     width: 100%;
