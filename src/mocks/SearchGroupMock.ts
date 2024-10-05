@@ -19,9 +19,9 @@ const searchGroupMock = {
       size: 7,
       content: [
           {
-              teamName: "매일 홈트 시작",
-              leaderNickname: "나만의 홈트",
-              teamDescription: "매일 1시간씩 운동하는 것을 목표로 합니다.",
+              teamName: "매일매일매일매일매일 홈트 시작",
+              leaderNickname: "나만의 홈트홈트홈트홈트홈트홈트홈트홈트",
+              teamDescription: "매일 1시간씩 운동하는 것을 목표로 합니다. 여러분 운동을 하는건 매우 중요한 일입니다. 다같이 운동을 합시다.",
               maxParticipants: 6,
               currentParticipants: 5,
               password: "1234",
@@ -32,14 +32,34 @@ const searchGroupMock = {
                       tagAttribute: "성별",
                   },
                   {
-                      tagId: 4,
-                      tagName: "20대",
-                      tagAttribute: "나이"
+                      tagId: 2,
+                      tagName: "남성",
+                      tagAttribute: "성별"
                   },
                   {
-                      tagId: 11,
-                      tagName : "약",
-                      tagAttribute: "운동강도"
+                      tagId: 3,
+                      tagName : "무관",
+                      tagAttribute: "성별"
+                  },
+                  {
+                    tagId: 4,
+                    tagName : "20대",
+                    tagAttribute: "나이"
+                  },
+                  {
+                    tagId: 5,
+                    tagName : "30대",
+                    tagAttribute: "나이"
+                  },
+                  {
+                    tagId: 8,
+                    tagName : "전연령",
+                    tagAttribute: "나이"
+                  },
+                  {
+                    tagId: 9,
+                    tagName : "강",
+                    tagAttribute: "운동강도"
                   }
               ]
           },

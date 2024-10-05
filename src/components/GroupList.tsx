@@ -34,8 +34,7 @@ export default GroupList;
 
 const GroupContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 5px 25px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px 5px;
   width: 90%; 
-  padding: 0 15%;
 `;

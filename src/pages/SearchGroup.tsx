@@ -59,7 +59,17 @@ const SearchGroup = () => {
   const joinGroup = (group : Team) => {
     alert(`${group.teamName}가입이 완료되었습니다.`);
   };
-  
+
+  const renderGroups = () => {
+    const filteredGroups = searchGroupMock.Page.content.filter(group => 
+      group.teamName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (filteredGroups.length === 0) {
+      return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>;
+    }
+    return <GroupList groups={filteredGroups} showMenuButton={false} onCardClick={handleGroupClick} />;
+  };
 
   const renderModalContent = () => {
     if (!selectedGroup) {
@@ -117,6 +127,7 @@ const SearchGroup = () => {
         <Title>그룹 탐색</Title>
         <SearchBar onChange={handleSearchChange} value={searchTerm} />
         <TagFilter tags={tagMock.tagList} activeFilters={activeFilters} toggleFilter={toggleFilter} />
+        {renderGroups()}
         <GroupList groups={searchGroupMock.Page.content.filter(group => group.teamName.toLowerCase().includes(searchTerm.toLowerCase()))}
                    showMenuButton={false} onCardClick={handleGroupClick} />
         {renderModalContent()}
@@ -253,4 +264,11 @@ const LockIcon = styled.span`
   position: absolute;
   font-size: 14px;
   margin-left: 5px;
+`;
+
+const NoGroupsMessage = styled.div`
+  font-size: 18px;
+  margin-top: 40px;
+  padding : 100px;
+  text-align: center;
 `;

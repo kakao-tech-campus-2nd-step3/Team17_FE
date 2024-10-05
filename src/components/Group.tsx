@@ -50,14 +50,17 @@ export default Group;
 
 const GroupCard = styled.div`
 position: relative;
-  width: 90%;
-  padding: 15px 5px 0px 20px;
+  max-width: 85%;
+  padding: 15px 5px 0px 10px;
   margin: 5px 0;
-  border-radius: 15px;
+  border-radius: 10px;
   background: linear-gradient(180deg, #F8FDFF 0%, #D7E0FF 100%);
   border: 2px solid #B5C3E9;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor : pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const GroupName = styled.div`
@@ -65,6 +68,10 @@ const GroupName = styled.div`
   font-size: 14px;
   font-weight: bold;
   margin-top : 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
 `;
 
 const GroupDetails = styled.div`
@@ -72,6 +79,10 @@ const GroupDetails = styled.div`
   font-size: 12px;
   font-weight: bold;
   margin-top : 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
 `;
 
 const GroupInfo = styled.div`
@@ -85,6 +96,9 @@ const TagLine = styled.p`
   color: #8E8E8E;
   font-size: 12px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const MenuButton = styled.button`
@@ -101,6 +115,8 @@ const Icon = styled.div`
     color: #828282;
     font-weight: 300;
     padding: 5px 0 0 0;
+    position : absolute;
+    right : 0px;
 `;
 
 const LockIcon = styled.span`

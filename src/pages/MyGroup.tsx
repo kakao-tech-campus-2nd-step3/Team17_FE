@@ -30,6 +30,7 @@ const MyGroup = () => {
 
   const closeModal = () => {
     setModalOpen(false);
+    setIsSecondModalOpen(false);
   };
 
   const openSecondModal = () => {
@@ -45,6 +46,14 @@ const MyGroup = () => {
     alert(`${group.teamName} 입장하기`);
   }
 
+  const renderGroups = () => {
+    if (filteredGroups.length === 0) {
+      return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>;
+    } 
+      return <GroupList groups={filteredGroups} showMenuButton onCardClick={handleMenuClick} onButtonClick={handleGroupClick} />;
+
+  };
+
   const modalContent = groupType === "joined" ? "그룹 탈퇴하기" : "그룹 삭제하기";
   
   // 백엔드 api 확인 후 그룹 구조 변경
@@ -58,6 +67,7 @@ const MyGroup = () => {
           <option value="created">내가 만든 그룹</option>
         </select>
       </DropdownContainer>
+      {renderGroups()}
       <GroupList groups={filteredGroups} showMenuButton onCardClick={handleMenuClick} onButtonClick={handleGroupClick} />
       {/* 첫 번째 모달 */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -171,4 +181,11 @@ const ModalButton = styled.button`
   &:hover {
     color : #B5C3E9;
   }
+`;
+
+const NoGroupsMessage = styled.div`
+  font-size: 18px;
+  margin-top: 40px;
+  padding : 100px 0;
+  text-align: center;
 `;
