@@ -5,15 +5,22 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import styled from '@emotion/styled'
 
-const DateSelect = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+interface DateSelectProps {
+  selectedDate: Date
+  setSelectedDate: (date: Date) => void
+}
+
+const DateSelect: React.FC<DateSelectProps> = ({
+  selectedDate,
+  setSelectedDate,
+}) => {
   const formattedDate = format(selectedDate, 'yyyy년 M월 d일 (EEE)', {
     locale: ko,
   })
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
 
-  const handelPrev = () => {
+  const handlePrev = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
   }
 
@@ -51,7 +58,7 @@ const DateSelect = () => {
   return (
     <Wrapper>
       <DateSelectContainer>
-        <DateSelecter onClick={handelPrev}>{'<'}</DateSelecter>
+        <DateSelecter onClick={handlePrev}>{'<'}</DateSelecter>
         <DateSelection onClick={handleDateClick}>{formattedDate}</DateSelection>
         <DateSelecter onClick={handleNext}>{'>'}</DateSelecter>
       </DateSelectContainer>
@@ -69,22 +76,14 @@ const DateSelect = () => {
   )
 }
 
-const Wrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-color: #f2f2f6;
-  padding: 50px 15px 20px 15px;
-  box-sizing: border-box;
-`
+const Wrapper = styled.div``
 
 const DateSelectContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 0px 25px;
 `
 
 const DateSelecter = styled.div`
@@ -95,10 +94,11 @@ const DateSelecter = styled.div`
 
 const DateSelection = styled.div`
   font-size: 20px;
-  padding: 3px 20px;
+  padding: 3px 40px;
   cursor: pointer;
   font-weight: 500;
 `
+
 const CalendarContainer = styled.div`
   background-color: #ffffff;
   justify-content: center;
@@ -107,7 +107,6 @@ const CalendarContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   z-index: 10;
-  /* position: absolute; */
 `
 
 export default DateSelect
