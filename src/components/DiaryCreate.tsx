@@ -12,7 +12,7 @@ const DiaryCreate: React.FC<DiaryCreateProps> = ({
   onSubmit,
 }) => {
   return (
-    <Wrapper>
+    <DiaryCreateWrapper>
       <TitleContainer>
         <Title>홈트 일기</Title>
         <CreateButton onClick={onSubmit}>작성 완료</CreateButton>
@@ -22,11 +22,11 @@ const DiaryCreate: React.FC<DiaryCreateProps> = ({
         onChange={(e) => setNewDiary(e.target.value)}
         placeholder="일기를 작성하세요"
       />
-    </Wrapper>
+    </DiaryCreateWrapper>
   )
 }
 
-const Wrapper = styled.div``
+const DiaryCreateWrapper = styled.div``
 const TitleContainer = styled.div`
   display: flex;
   flex-direction: row;
