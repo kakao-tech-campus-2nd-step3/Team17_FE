@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import Timer from '../components/Timer'
@@ -15,6 +13,7 @@ const Main = () => {
     mainMock.exerciseList
   )
   const [diary, setDiary] = useState(mainMock.diary)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date())
   const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
 
@@ -39,6 +38,7 @@ const Main = () => {
           setTotalTime((prevTime) => prevTime + elapsedTime)
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('운동 리스트 불러오기 실패', error)
       }
     }
@@ -51,9 +51,11 @@ const Main = () => {
       const response = await axiosInstance.post('/api/diary', {
         memo: newDiary,
       })
+      // eslint-disable-next-line no-console
       console.log('Diary 전송 성공', response.data)
       setNewDiary('')
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error submitting diary:', error)
     }
   }
@@ -63,8 +65,6 @@ const Main = () => {
       <DateContainer>
         <Timer
           totalTime={totalTime}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
           setExerciseList={setExerciseList}
           isAnyActive={isAnyActive}
         />
