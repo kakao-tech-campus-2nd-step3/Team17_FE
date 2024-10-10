@@ -45,7 +45,7 @@ const Ranking = () => {
     }
 
   return (
-    <Wrapper>
+    <RankingWrapper>
         <TitleContainer>
             <BeforeButton onClick={handleBeforeClick}>&lt;</BeforeButton>
             <Title>매일 운동 도전</Title>
@@ -78,12 +78,12 @@ const Ranking = () => {
         <ChatButton onClick={handleChatClick}>
             <ChatIcon src={chatbubble} alt="chat icon" />
         </ChatButton>
-    </Wrapper>
+    </RankingWrapper>
   )
 }
 
 
-const Wrapper = styled.div`
+const RankingWrapper = styled.div`
     width: 100%;
     height: calc(100vh - 55px);
     background-color: #f2f2f6;
