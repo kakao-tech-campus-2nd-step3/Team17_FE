@@ -7,7 +7,7 @@ interface TodayDiaryProps {
 
 const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
   return (
-    <TodayDiaryWrapper>
+    <Wrapper>
       <TitleContainer>
         <Title>오늘의 일기</Title>
       </TitleContainer>
@@ -22,11 +22,11 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
           <DiaryContent>{diary.memo}</DiaryContent>
         </DiaryContainer>
       ))}
-    </TodayDiaryWrapper>
+    </Wrapper>
   )
 }
 
-const TodayDiaryWrapper = styled.div``
+const Wrapper = styled.div``
 
 const TitleContainer = styled.div`
   display: flex;

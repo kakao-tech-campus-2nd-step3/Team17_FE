@@ -56,7 +56,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
   }
 
   return (
-    <DateSelectWrapper>
+    <Wrapper>
       <DateSelectContainer>
         <DateSelecter onClick={handlePrev}>{'<'}</DateSelecter>
         <DateSelection onClick={handleDateClick}>{formattedDate}</DateSelection>
@@ -72,11 +72,11 @@ const DateSelect: React.FC<DateSelectProps> = ({
           />
         </CalendarContainer>
       )}
-    </DateSelectWrapper>
+    </Wrapper>
   )
 }
 
-const DateSelectWrapper = styled.div``
+const Wrapper = styled.div``
 
 const DateSelectContainer = styled.div`
   display: flex;
