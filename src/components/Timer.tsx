@@ -6,8 +6,6 @@ import { Exercise } from './ExerciseList'
 
 interface TimerProps {
   totalTime: number
-  selectedDate: Date
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
   isAnyActive: boolean
 }
