@@ -1,5 +1,5 @@
-import styled from "@emotion/styled"
-import ProductMock from "../mocks/ProductMock"
+import styled from '@emotion/styled'
+import ProductMock from '../mocks/ProductMock'
 
 const Market = () => {
   return (
@@ -8,15 +8,17 @@ const Market = () => {
       <ProductWrapper>
         {ProductMock.content.map((product) => (
           <ProductContainer key={product.productId}>
-          <ProductPhoto>
-            <img src={product.imageUrl} alt={product.name} />
-          </ProductPhoto>
-          <ProductInfo>
+            <ProductPhoto>
+              <img src={product.imageUrl} alt={product.name} />
+            </ProductPhoto>
+            <ProductInfo>
               <ProductName>{product.name}</ProductName>
               <ProductSite>{product.storeName}</ProductSite>
-              <ProductPrice>{Number(product.price).toLocaleString()}원</ProductPrice>
-          </ProductInfo>
-        </ProductContainer>
+              <ProductPrice>
+                {Number(product.price).toLocaleString()}원
+              </ProductPrice>
+            </ProductInfo>
+          </ProductContainer>
         ))}
       </ProductWrapper>
     </MarketWrapper>
@@ -48,7 +50,7 @@ const ProductWrapper = styled.div`
 
 const ProductContainer = styled.div`
   border-radius: 10px;
-  border: 2px solid #B5C3E9;
+  border: 2px solid #b5c3e9;
   margin: 5px;
   display: flex;
   flex-direction: row;
@@ -74,7 +76,7 @@ const ProductName = styled.div`
 `
 
 const ProductSite = styled.div`
-  color: #8E8E8E;
+  color: #8e8e8e;
   margin-top: 7px;
   font-size: 14px;
 `
