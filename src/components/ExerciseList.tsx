@@ -128,7 +128,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   }
 
   return (
-    <Wrapper>
+    <ExerciseWrapper>
       <TitleContainer>
         <Title>상세 운동 내역</Title>
         <AddButton onClick={handleAddClick}>+</AddButton>
@@ -170,7 +170,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
           <DoneBtn onClick={handleExerciseSubmit}>완료</DoneBtn>
         </ModalBtnContainer>
       </Modal>
-    </Wrapper>
+    </ExerciseWrapper>
   )
 }
 
@@ -178,7 +178,7 @@ interface ListElementProps {
   isActive: boolean
 }
 
-const Wrapper = styled.div``
+const ExerciseWrapper = styled.div``
 
 const TitleContainer = styled.div`
   display: flex;

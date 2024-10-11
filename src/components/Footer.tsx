@@ -5,7 +5,7 @@ const Footer = () => {
   const location = useLocation()
 
   return (
-    <Wrapper>
+    <FooterWrapper>
       <Container>
         <Link to="/">
           <NavIcon
@@ -59,11 +59,11 @@ const Footer = () => {
           </NavText>
         </Link>
       </Container>
-    </Wrapper>
+    </FooterWrapper>
   )
 }
 
-const Wrapper = styled.div`
+const FooterWrapper = styled.div`
   background-color: #ffffff;
   max-width: 400px;
   margin-left: auto;
