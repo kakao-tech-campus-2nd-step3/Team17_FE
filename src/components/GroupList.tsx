@@ -15,7 +15,7 @@ const GroupList: React.FC<GroupListProps> = ({
   groups,
   showMenuButton,
   onCardClick,
-  onButtonClick = () => {}, 
+  onButtonClick = () => {},
 }) => {
   return (
     <GroupContainer>

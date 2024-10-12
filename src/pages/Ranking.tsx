@@ -28,15 +28,15 @@ const Ranking = () => {
         const year = selectedDate.getFullYear()
         const month = selectedDate.getMonth() + 1
         const day = selectedDate.getDate()
-        
+
         const response = await getRanking({
-            groupId: groupId || '',
-            page: 0,
-            size: 8,
-            sort: 'time,asc',
-            year,
-            month,
-            day
+          groupId: groupId || '',
+          page: 0,
+          size: 8,
+          sort: 'time,asc',
+          year,
+          month,
+          day,
         })
         setRankData(response)
       } catch (error) {
@@ -47,12 +47,12 @@ const Ranking = () => {
     fetchRankingData()
   }, [groupId, selectedDate])
 
-  
-
   return (
     <RankingWrapper>
       <TitleContainer>
-        <Link to='/mygroup'><BeforeButton>&lt;</BeforeButton></Link>
+        <Link to="/mygroup">
+          <BeforeButton>&lt;</BeforeButton>
+        </Link>
         <Title>매일 운동 도전</Title>
         <Space></Space>
       </TitleContainer>
@@ -84,7 +84,7 @@ const Ranking = () => {
       </MyRank>
       <Link to={`/chat/${groupId}`}>
         <ChatButton>
-            <ChatIcon src={chatbubble} alt='chat icon' />
+          <ChatIcon src={chatbubble} alt="chat icon" />
         </ChatButton>
       </Link>
     </RankingWrapper>
