@@ -120,7 +120,7 @@ const AddGroup = () => {
           <TagFilter
             tags={tagMock.tagList}
             activeFilters={activeFilters}
-            toggleFilter={toggleFilter}
+            onToggleFilter={toggleFilter}
           />
           <SubmitButton type="submit" onClick={handleSubmit}>
             생성하기

@@ -168,7 +168,7 @@ const SearchGroup = () => {
         <TagFilter
           tags={tagMock.tagList}
           activeFilters={activeFilters}
-          toggleFilter={toggleFilter}
+          onToggleFilter={toggleFilter}
         />
         {renderGroups()}
         {renderModalContent()}
