@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { Duration } from 'luxon'
@@ -41,6 +40,7 @@ const Ranking = () => {
         })
         setRankData(response)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('랭크 데이터 가져오기 실패', error)
       }
     }
