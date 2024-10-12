@@ -73,18 +73,9 @@ const AddGroup = () => {
     // 추후 서버로 데이터를 보내는 로직 구현
     // eslint-disable-next-line
     console.log('Submitting group data:', groupData)
-    alert(
-      `그룹생성\n Details:\n그룹이름: ${inputs.teamname}\n최대인원: ${inputs.participant}\n비밀번호: ${inputs.password ? inputs.password : 'null'}\n그룹설명: ${inputs.comment}\n태그정보: ${activeFilters.join(', ')}`
-    )
-    setInputs({
-      teamname: '',
-      password: '',
-      participant: '',
-      comment: '',
-    })
-    setActiveFilters([])
     setModalMessage('그룹 생성이 완료되었습니다.')
     setModalOpen(true)
+    console.log('Submitting group data- after:', groupData)
     setSubmissionSuccess(true)
   }
 
@@ -129,7 +120,7 @@ const AddGroup = () => {
           <TagFilter
             tags={tagMock.tagList}
             activeFilters={activeFilters}
-            toggleFilter={toggleFilter}
+            onToggleFilter={toggleFilter}
           />
           <SubmitButton type="submit" onClick={handleSubmit}>
             생성하기
@@ -207,7 +198,7 @@ const FormContainer = styled.div`
 
 const FieldName = styled.div`
   font-size: 14px;
-  padding: 10px;
+  padding: 5px;
   font-weight: 500;
   text-align: left;
   display: flex;

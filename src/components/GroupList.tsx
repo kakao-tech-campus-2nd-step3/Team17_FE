@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React from 'react'
 import styled from '@emotion/styled'
 import Group from './Group'
@@ -14,12 +15,8 @@ const GroupList: React.FC<GroupListProps> = ({
   groups,
   showMenuButton,
   onCardClick,
-  onButtonClick,
+  onButtonClick = () => {}, 
 }) => {
-  GroupList.defaultProps = {
-    onButtonClick: () => {},
-  }
-
   return (
     <GroupContainer>
       {groups.map((group) => (
