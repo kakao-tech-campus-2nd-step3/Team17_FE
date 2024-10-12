@@ -6,8 +6,8 @@ import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import DateSelect from '../components/DateSelect'
 import RankingMock from '../mocks/RankingMock'
-import axiosInstance from '../api/axiosInstance'
 import chatbubble from '../assets/chatbubble.svg'
+import getRanking from '../api/getRanking'
 
 const Ranking = () => {
   const { groupId } = useParams()
@@ -26,23 +26,33 @@ const Ranking = () => {
   useEffect(() => {
     const fetchRankingData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/api/team/${groupId}/ranking?page=0&size=7&sort=time,asc&year=2024&month=7&day=26`
-        )
-        setRankData(response.data)
+        const year = selectedDate.getFullYear()
+        const month = selectedDate.getMonth() + 1
+        const day = selectedDate.getDate()
+        
+        const response = await getRanking({
+            groupId: groupId || '',
+            page: 0,
+            size: 8,
+            sort: 'time,asc',
+            year,
+            month,
+            day
+        })
+        setRankData(response)
       } catch (error) {
         console.error('랭크 데이터 가져오기 실패', error)
       }
     }
     fetchRankingData()
-  }, [groupId])
+  }, [groupId, selectedDate])
 
   
 
   return (
     <RankingWrapper>
       <TitleContainer>
-        <Link to="/mygroup"><BeforeButton>&lt;</BeforeButton></Link>
+        <Link to='/mygroup'><BeforeButton>&lt;</BeforeButton></Link>
         <Title>매일 운동 도전</Title>
         <Space></Space>
       </TitleContainer>
@@ -74,7 +84,7 @@ const Ranking = () => {
       </MyRank>
       <Link to={`/chat/${groupId}`}>
         <ChatButton>
-            <ChatIcon src={chatbubble} alt="chat icon" />
+            <ChatIcon src={chatbubble} alt='chat icon' />
         </ChatButton>
       </Link>
     </RankingWrapper>
