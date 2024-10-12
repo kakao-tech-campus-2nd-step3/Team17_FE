@@ -2,7 +2,8 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { Duration } from 'luxon'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import { Link } from 'react-router-dom'
 import DateSelect from '../components/DateSelect'
 import RankingMock from '../mocks/RankingMock'
 import axiosInstance from '../api/axiosInstance'
@@ -10,7 +11,6 @@ import chatbubble from '../assets/chatbubble.svg'
 
 const Ranking = () => {
   const { groupId } = useParams()
-  const navigate = useNavigate()
 
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [rankData, setRankData] = useState(RankingMock)
@@ -37,17 +37,12 @@ const Ranking = () => {
     fetchRankingData()
   }, [groupId])
 
-  const handleBeforeClick = () => {
-    navigate('/mygroup')
-  }
-  const handleChatClick = () => {
-    navigate(`/chat/${groupId}`)
-  }
+  
 
   return (
     <RankingWrapper>
       <TitleContainer>
-        <BeforeButton onClick={handleBeforeClick}>&lt;</BeforeButton>
+        <Link to="/mygroup"><BeforeButton>&lt;</BeforeButton></Link>
         <Title>매일 운동 도전</Title>
         <Space></Space>
       </TitleContainer>
@@ -59,7 +54,7 @@ const Ranking = () => {
           />
         </DateContainer>
         <EntireRank>
-          {rankData.Page.content.map((ranker, index) => (
+          {rankData.page.content.map((ranker, index) => (
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
@@ -77,9 +72,11 @@ const Ranking = () => {
           <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
         </MyRankElement>
       </MyRank>
-      <ChatButton onClick={handleChatClick}>
-        <ChatIcon src={chatbubble} alt="chat icon" />
-      </ChatButton>
+      <Link to={`/chat/${groupId}`}>
+        <ChatButton>
+            <ChatIcon src={chatbubble} alt="chat icon" />
+        </ChatButton>
+      </Link>
     </RankingWrapper>
   )
 }
