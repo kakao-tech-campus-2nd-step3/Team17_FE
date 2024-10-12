@@ -75,6 +75,7 @@ const AddGroup = () => {
     console.log('Submitting group data:', groupData)
     setModalMessage('그룹 생성이 완료되었습니다.')
     setModalOpen(true)
+    // eslint-disable-next-line no-console
     console.log('Submitting group data- after:', groupData)
     setSubmissionSuccess(true)
   }

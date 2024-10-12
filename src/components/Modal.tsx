@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
 import styled from '@emotion/styled'
 
 interface ModalProps {
@@ -11,8 +11,8 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null
 
-  const modalRoot = document.getElementById('modal');
-  if (!modalRoot) return null; 
+  const modalRoot = document.getElementById('modal')
+  if (!modalRoot) return null
 
   return ReactDOM.createPortal(
     <ModalBackground onClick={onClose}>
@@ -20,9 +20,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         {children}
       </ModalContainer>
     </ModalBackground>,
-    modalRoot 
-  );
-};
+    modalRoot
+  )
+}
 
 const ModalBackground = styled.div`
   position: fixed;
