@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Footer from './components/Footer'
 import AppRoutes from './routes/AppRoutes'
 
@@ -14,10 +14,4 @@ const App = () => {
   )
 }
 
-const AppWrapper = (): JSX.Element => (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-)
-
-export default AppWrapper
+export default App

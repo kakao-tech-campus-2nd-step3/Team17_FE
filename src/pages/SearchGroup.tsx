@@ -1,27 +1,42 @@
-import React, { useState, ChangeEvent } from 'react'
 import styled from '@emotion/styled'
-import tagMock, { Tag } from '../mocks/TagMock'
+import React, { useState, ChangeEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import tagMock from '../mocks/TagMock'
 import searchGroupMock, { Team } from '../mocks/SearchGroupMock'
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  active: boolean
-}
+import GroupListContainer from '../components/GroupListContainer'
+import GroupModal from '../components/GroupModal'
+import TagFilter from '../components/TagFilter'
+import SearchBar from '../components/SearchBar'
 
 const SearchGroup = () => {
   const [activeFilters, setActiveFilters] = useState<number[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [modalType, setModalType] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState<Team | undefined>(
+    undefined
+  )
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-  const getTagAttributes = (tags: Tag[]): string[] => {
-    return tags.map((tag) => tag.tagAttribute)
+  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value)
+  }
+
+  const verifyPassword = () => {
+    if (selectedGroup && password === selectedGroup.password) {
+      setModalType('info')
+    } else {
+      setModalType('error')
+    }
   }
 
   const toggleFilter = (tagId: number | null | undefined) => {
     if (tagId !== null && tagId !== undefined) {
-      if (activeFilters.includes(tagId)) {
-        setActiveFilters(activeFilters.filter((id) => id !== tagId))
-      } else {
-        setActiveFilters([...activeFilters, tagId])
-      }
+      setActiveFilters(
+        activeFilters.includes(tagId)
+          ? activeFilters.filter((id) => id !== tagId)
+          : [...activeFilters, tagId]
+      )
     }
   }
 
@@ -29,194 +44,109 @@ const SearchGroup = () => {
     setSearchTerm(event.target.value)
   }
 
-  const handleSearch = () => {
-    // 검색 로직
+  const handleGroupClick = (group: Team) => {
+    setSelectedGroup(group)
+    setPassword('')
+    if (group.password) {
+      setModalType('password')
+    } else {
+      setModalType('info')
+    }
   }
 
-  const filteredGroups = searchGroupMock.Page.content.filter(
-    (group) =>
-      activeFilters.length === 0 ||
-      group.tagList.some((tag) => activeFilters.includes(tag.tagId)) ||
-      group.teamName.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const closeModal = () => {
+    setModalType('')
+    setPassword('')
+  }
+
+  const joinGroup = (group: Team) => {
+    alert(`${group.teamName}가입이 완료되었습니다.`)
+  }
+
+  const navigateToAddGroup = () => {
+    navigate('/addGroup')
+  }
 
   return (
-    <Wrapper>
-      <Title>그룹 탐색</Title>
-      <SearchContainer>
-        <SearchBar
-          placeholder="홈트를 함께 이어나갈 그룹을 검색해보세요"
-          onChange={handleSearchChange}
-          value={searchTerm}
+    <PageWrapper>
+      <PageContainer>
+        <PageTitle>그룹 탐색</PageTitle>
+        <SearchBar onChange={handleSearchChange} value={searchTerm} />
+        <TagFilter
+          tags={tagMock.tagList}
+          activeFilters={activeFilters}
+          onToggleFilter={toggleFilter}
         />
-        <SearchIcon
-          onClick={handleSearch}
-          className="material-symbols-outlined"
-          isActive={false}
-        >
-          search
-        </SearchIcon>
-      </SearchContainer>
-      <Filters>
-        {tagMock.tagList.map((tag: Tag) => (
-          <Button
-            key={tag.tagId}
-            onClick={() => toggleFilter(tag.tagId)}
-            active={activeFilters.includes(tag.tagId)}
-          >
-            {tag.tagAttribute}
-          </Button>
-        ))}
-      </Filters>
-      <GroupContainer>
-        {filteredGroups.map((team: Team) => (
-          <GroupCard key={team.teamName}>
-            <Name>{team.teamName}</Name>
-            <Details>{team.leaderNickname}</Details>
-            <MemberInfo>
-              멤버 {team.currentParticipants}/{team.maxParticipants}명
-            </MemberInfo>
-            <TagLine>#{getTagAttributes(team.tagList).join(' # ')}</TagLine>
-          </GroupCard>
-        ))}
-      </GroupContainer>
-      <AddButton>+</AddButton>
-    </Wrapper>
+        <GroupListContainer
+          groups={searchGroupMock.Page.content}
+          searchTerm={searchTerm}
+          onCardClick={handleGroupClick}
+        />
+        <GroupModal
+          modalType={modalType}
+          selectedGroup={selectedGroup}
+          password={password}
+          onPasswordChange={handlePasswordChange}
+          onVerifyPassword={verifyPassword}
+          onClose={closeModal}
+          onJoinGroup={joinGroup}
+        />
+      </PageContainer>
+      <AddButton onClick={navigateToAddGroup}>+</AddButton>
+    </PageWrapper>
   )
 }
 
-export default SearchGroup
-
-const Wrapper = styled.div`
+/* Page */
+const PageWrapper = styled.div`
   display: flex;
-  align-items: center;
   flex-direction: column;
   width: 100%;
   background-color: #f2f2f6;
-  padding: 10px 15px 20px 15px;
+  padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
   overflow-y: auto;
+  overflow-x: hidden;
 `
 
-const Title = styled.p`
-  font-size: 24px;
+const PageContainer = styled.div`
+  padding: 10px 15px 20px 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 10px;
+  margin: 20px 0px;
+`
+
+const PageTitle = styled.p`
+  font-size: 22px;
   margin-bottom: 20px;
   font-weight: bold;
 `
 
-const SearchContainer = styled.div`
-  width: 90%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 10px 0;
-`
-
-const SearchBar = styled.input`
-  width: 100%;
-  padding: 10px 40px 10px 10px;
-  border: 2px solid #b5c3e9;
-  border-radius: 10px;
-  position: relative;
-`
-
-const Button = styled.button<ButtonProps>`
-  background-color: ${({ active }) => (active ? '#B5C3E9' : 'white')};
-  color: ${({ active }) => (active ? 'white' : '#768DCB')};
-  border: 1px solid #768dcb;
-  border-radius: 10px;
-  padding: 5px 10px;
-  margin: 3px 2px;
-  cursor: pointer;
-  font-size: 14px;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-
-  &:hover {
-    background-color: ${({ active }) => (!active ? '#E0F0FF' : '#B5C3E9')};
-    color: ${({ active }) => (!active ? '#B5C3E9' : 'white')};
-  }
-`
-
-const Filters = styled.div`
+const AddButton = styled.button`
+  align-self: flex-end;
+  margin-top: auto;
+  position: absolute;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-`
-
-const GroupContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px 15px;
-  width: 90%;
-  padding: 0 15%;
-`
-
-const GroupCard = styled.div`
-  width: 90%;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #f8fdff 0%, #d7e0ff 100%);
-  border: 2px solid #b5c3e9;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-`
-
-const Name = styled.p`
-  color: #3f3f3f;
-  font-size: 14px;
-  font-weight: bold;
-`
-
-const Details = styled.p`
-  color: #8e8e8e;
-  font-size: 12px;
-  font-weight: bold;
-`
-
-const TagLine = styled.p`
-  color: #8e8e8e;
-  font-size: 12px;
-  font-weight: bold;
-`
-
-const MemberInfo = styled.p`
-  color: #8e8e8e;
-  font-size: 12px;
-  font-weight: bold;
-`
-
-const AddButton = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  align-items: center;
+  bottom: 100px;
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: #007bff;
+  background-color: rgba(181, 195, 233, 0.8);
   color: white;
   font-size: 24px;
   border: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  &:hover {
+    background-color: #b5c3e9;
+  }
 `
 
-const NavIcon = styled.div<{ isActive: boolean }>`
-  margin-bottom: 7px;
-  font-size: 24px;
-  color: ${(props) => (props.isActive ? '#7992EB' : '#4E4C4C')};
-`
-
-const SearchIcon = styled(NavIcon)`
-  position: absolute;
-  right: 10px;
-  color: #ccc;
-  font-size: 24px;
-  right: 10px;
-  cursor: pointer;
-`
+export default SearchGroup
