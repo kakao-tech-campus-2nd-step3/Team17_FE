@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance'
 interface GetMypageParams {
   nickName: string
   email: string
-  attendanceDay: number
+  attendance: number
   weeklyTotal: string
   monthlyTotal: string
 }

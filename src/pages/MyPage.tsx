@@ -17,7 +17,7 @@ const MyPage = () => {
         const response = await getMypage()
         setUserName(response.nickName)
         setUserEmail(response.email)
-        setAttendanceDay(response.attendanceDay)
+        setAttendanceDay(response.attendance)
         setMonthlyTotal(response.weeklyTotal)
         setWeeklyTotal(response.weeklyTotal)
       } catch (error) {
