@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import searchGroupMock, { Team } from '../mocks/SearchGroupMock'
+import searchGroupMock, { Team } from '../mocks/GroupMock'
 import GroupList from '../components/GroupList'
 import Modal from '../components/Modal'
 

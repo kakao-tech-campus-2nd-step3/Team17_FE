@@ -1,8 +1,7 @@
-/* eslint-disable react/require-default-props */
 import React from 'react'
 import styled from '@emotion/styled'
 import Group from './Group'
-import { Team } from '../mocks/SearchGroupMock'
+import { Team } from '../mocks/GroupMock'
 
 interface GroupListProps {
   groups: Team[]
@@ -15,7 +14,7 @@ const GroupList: React.FC<GroupListProps> = ({
   groups,
   showMenuButton,
   onCardClick,
-  onButtonClick = () => {},
+  onButtonClick = () => {}, 
 }) => {
   return (
     <GroupContainer>
@@ -30,6 +29,9 @@ const GroupList: React.FC<GroupListProps> = ({
       ))}
     </GroupContainer>
   )
+}
+GroupList.defaultProps = {
+  onButtonClick: () => {},
 }
 
 export default GroupList
