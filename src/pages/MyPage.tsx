@@ -1,21 +1,49 @@
 import styled from "@emotion/styled"
+import { useEffect, useState } from "react"
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
+import getMypage from "../api/getMypage"
 
 const MyPage = () => {
+
+  const [userName, setUserName] = useState('홍길동님')
+  const [userEmail, setUserEmail] = useState('gildong@gmail.com')
+  const [attendanceDay, setAttendanceDay] = useState(97)
+  const [monthlyTotal, setMonthlyTotal] = useState('42:00:08')
+  const [weeklyTotal, setWeeklyTotal] = useState('12:24:32')
+
+  useEffect(() => {
+    const fetchMypageData = async () => {
+      try {
+        const response = await getMypage()
+        setUserName(response.nickName)
+        setUserEmail(response.email)
+        setAttendanceDay(response.attendanceDay)
+        setMonthlyTotal(response.weeklyTotal)
+        setWeeklyTotal(response.weeklyTotal)
+      } catch (error) {
+        // 에러 처리하기
+        // eslint-disable-next-line no-console
+        console.error('마이페이지 데이터 가져오기 실패', error)
+      }
+    }
+    
+    fetchMypageData()
+  }, [])
+
   return (
     <MypageWrapper>
       <MypageTitle>마이페이지</MypageTitle>
       <PersonalWrapper>
         <PersonalPicture src={Personal} width={90}/>
         <PersonalInfo>
-          <PersonalName>홍길동님</PersonalName>
-          <PersonalEmail>gildong@gmail.com</PersonalEmail>
+          <PersonalName>{userName}</PersonalName>
+          <PersonalEmail>{userEmail}</PersonalEmail>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
-        <AttendText>지금까지 <TextHighlight>97</TextHighlight>일 출석하였어요 !</AttendText>
+        <AttendText>지금까지 <TextHighlight>{attendanceDay}</TextHighlight>일 출석하였어요 !</AttendText>
       </AttendWrapper>
       <StaticWrapper>
         <StaticTitleContainer>
@@ -24,11 +52,11 @@ const MyPage = () => {
         </StaticTitleContainer>
         <MonthlyStatic>
           <MonthlyTitle>월별 통계</MonthlyTitle>
-          <MonthlyTime>42:00:08</MonthlyTime>
+          <MonthlyTime>{monthlyTotal}</MonthlyTime>
         </MonthlyStatic>
         <WeeklyStatic>
           <WeeklyTitle>주간 통계</WeeklyTitle>
-          <WeeklyTime>12:24:32</WeeklyTime>
+          <WeeklyTime>{weeklyTotal}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
     </MypageWrapper>
