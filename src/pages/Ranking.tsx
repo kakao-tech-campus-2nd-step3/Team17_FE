@@ -1,16 +1,15 @@
-/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { Duration } from 'luxon'
-import { useNavigate, useParams } from 'react-router'
+import { useParams } from 'react-router'
+import { Link } from 'react-router-dom'
 import DateSelect from '../components/DateSelect'
 import RankingMock from '../mocks/RankingMock'
-import axiosInstance from '../api/axiosInstance'
 import chatbubble from '../assets/chatbubble.svg'
+import getRanking from '../api/getRanking'
 
 const Ranking = () => {
   const { groupId } = useParams()
-  const navigate = useNavigate()
 
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [rankData, setRankData] = useState(RankingMock)
@@ -26,28 +25,34 @@ const Ranking = () => {
   useEffect(() => {
     const fetchRankingData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/api/team/${groupId}/ranking?page=0&size=7&sort=time,asc&year=2024&month=7&day=26`
-        )
-        setRankData(response.data)
+        const year = selectedDate.getFullYear()
+        const month = selectedDate.getMonth() + 1
+        const day = selectedDate.getDate()
+
+        const response = await getRanking({
+          groupId: groupId || '',
+          page: 0,
+          size: 8,
+          sort: 'time,asc',
+          year,
+          month,
+          day,
+        })
+        setRankData(response)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('랭크 데이터 가져오기 실패', error)
       }
     }
     fetchRankingData()
-  }, [groupId])
-
-  const handleBeforeClick = () => {
-    navigate('/mygroup')
-  }
-  const handleChatClick = () => {
-    navigate(`/chat/${groupId}`)
-  }
+  }, [groupId, selectedDate])
 
   return (
     <RankingWrapper>
       <TitleContainer>
-        <BeforeButton onClick={handleBeforeClick}>&lt;</BeforeButton>
+        <Link to="/mygroup">
+          <BeforeButton>&lt;</BeforeButton>
+        </Link>
         <Title>매일 운동 도전</Title>
         <Space></Space>
       </TitleContainer>
@@ -59,7 +64,7 @@ const Ranking = () => {
           />
         </DateContainer>
         <EntireRank>
-          {rankData.Page.content.map((ranker, index) => (
+          {rankData.page.content.map((ranker, index) => (
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
@@ -77,9 +82,11 @@ const Ranking = () => {
           <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
         </MyRankElement>
       </MyRank>
-      <ChatButton onClick={handleChatClick}>
-        <ChatIcon src={chatbubble} alt="chat icon" />
-      </ChatButton>
+      <Link to={`/chat/${groupId}`}>
+        <ChatButton>
+          <ChatIcon src={chatbubble} alt="chat icon" />
+        </ChatButton>
+      </Link>
     </RankingWrapper>
   )
 }
