@@ -1,11 +1,10 @@
-import styled from "@emotion/styled"
-import { useEffect, useState } from "react"
+import styled from '@emotion/styled'
+import { useEffect, useState } from 'react'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
-import getMypage from "../api/getMypage"
+import getMypage from '../api/getMypage'
 
 const MyPage = () => {
-
   const [userName, setUserName] = useState('홍길동님')
   const [userEmail, setUserEmail] = useState('gildong@gmail.com')
   const [attendanceDay, setAttendanceDay] = useState(97)
@@ -27,7 +26,7 @@ const MyPage = () => {
         console.error('마이페이지 데이터 가져오기 실패', error)
       }
     }
-    
+
     fetchMypageData()
   }, [])
 
@@ -35,7 +34,7 @@ const MyPage = () => {
     <MypageWrapper>
       <MypageTitle>마이페이지</MypageTitle>
       <PersonalWrapper>
-        <PersonalPicture src={Personal} width={90}/>
+        <PersonalPicture src={Personal} width={90} />
         <PersonalInfo>
           <PersonalName>{userName}</PersonalName>
           <PersonalEmail>{userEmail}</PersonalEmail>
@@ -43,11 +42,16 @@ const MyPage = () => {
       </PersonalWrapper>
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
-        <AttendText>지금까지 <TextHighlight>{attendanceDay}</TextHighlight>일 출석하였어요 !</AttendText>
+        <AttendText>
+          지금까지 <TextHighlight>{attendanceDay}</TextHighlight>일 출석하였어요
+          !
+        </AttendText>
       </AttendWrapper>
       <StaticWrapper>
         <StaticTitleContainer>
-          <StaticIcon className='material-symbols-outlined'>equalizer</StaticIcon>
+          <StaticIcon className="material-symbols-outlined">
+            equalizer
+          </StaticIcon>
           <StaticText>통계</StaticText>
         </StaticTitleContainer>
         <MonthlyStatic>
@@ -84,12 +88,11 @@ const MypageTitle = styled.div`
 
 const PersonalWrapper = styled.div`
   border-radius: 10px;
-  border: 2px solid #B5C3E9;
+  border: 2px solid #b5c3e9;
   padding: 20px;
   display: flex;
   flex-direction: row;
-  background: linear-gradient(180deg, #F8FDFF 0%, #D7E0FF 100%);
-
+  background: linear-gradient(180deg, #f8fdff 0%, #d7e0ff 100%);
 `
 
 const PersonalPicture = styled.img`
@@ -97,9 +100,7 @@ const PersonalPicture = styled.img`
   margin-left: 5px;
 `
 
-const PersonalInfo = styled.div`
-
-`
+const PersonalInfo = styled.div``
 
 const PersonalName = styled.div`
   font-size: 20px;
@@ -110,7 +111,7 @@ const PersonalName = styled.div`
 
 const PersonalEmail = styled.div`
   font-size: 14px;
-  color: #8E8E8E;
+  color: #8e8e8e;
 `
 
 const AttendWrapper = styled.div`
@@ -120,8 +121,6 @@ const AttendWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 35px 0;
-
-  
 `
 
 const AttendIcon = styled.img`
@@ -132,11 +131,11 @@ const AttendText = styled.div`
   letter-spacing: 0.5px;
   display: flex;
   white-space: pre;
-  color: #3F3F3F;
+  color: #3f3f3f;
 `
 
 const TextHighlight = styled.div`
-  color: #6D86CB;
+  color: #6d86cb;
 `
 
 const StaticWrapper = styled.div`
@@ -147,7 +146,7 @@ const StaticTitleContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 15px;
-  color: #3F3F3F;
+  color: #3f3f3f;
 `
 
 const StaticIcon = styled.div`
@@ -164,33 +163,25 @@ const MonthlyStatic = styled.div`
   flex-direction: row;
   justify-content: space-between;
   margin: 10px 0;
-  color: #6F6F6F;
+  color: #6f6f6f;
   font-size: 18px;
 `
 
-const MonthlyTitle = styled.div`
+const MonthlyTitle = styled.div``
 
-`
-
-const MonthlyTime = styled.div`
-
-`
+const MonthlyTime = styled.div``
 
 const WeeklyStatic = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin: 10px 0;
-  color: #6F6F6F;
+  color: #6f6f6f;
   font-size: 18px;
 `
 
-const WeeklyTitle = styled.div`
+const WeeklyTitle = styled.div``
 
-`
-
-const WeeklyTime = styled.div`
-
-`
+const WeeklyTime = styled.div``
 
 export default MyPage
