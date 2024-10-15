@@ -2,7 +2,7 @@ const RankingMock = {
   myRanking: 3,
   myNickname: '홍길동',
   myTime: 'PT7H30M45S',
-  Page: {
+  page: {
     totalPages: 3,
     totalElements: 3,
     size: 7,

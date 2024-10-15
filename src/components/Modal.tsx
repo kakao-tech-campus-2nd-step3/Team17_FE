@@ -1,3 +1,5 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
 import styled from '@emotion/styled'
 
 interface ModalProps {
@@ -9,12 +11,16 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null
 
-  return (
+  const modalRoot = document.getElementById('modal')
+  if (!modalRoot) return null
+
+  return ReactDOM.createPortal(
     <ModalBackground onClick={onClose}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         {children}
       </ModalContainer>
-    </ModalBackground>
+    </ModalBackground>,
+    modalRoot
   )
 }
 

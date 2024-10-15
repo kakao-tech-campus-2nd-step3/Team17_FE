@@ -9,13 +9,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 interface TagFilterProps {
   tags: Tag[]
   activeFilters: number[]
-  toggleFilter: (tagId: number) => void
+  onToggleFilter: (tagId: number) => void
 }
 
 const TagFilter: React.FC<TagFilterProps> = ({
   tags,
   activeFilters,
-  toggleFilter,
+  onToggleFilter,
 }) => {
   const groupTagsByAttribute = (tagItems: Tag[]) => {
     const groups: { [key: string]: Tag[] } = {}
@@ -38,7 +38,7 @@ const TagFilter: React.FC<TagFilterProps> = ({
             {tagGroups[attribute].map((tag) => (
               <Button
                 key={tag.tagId}
-                onClick={() => toggleFilter(tag.tagId)}
+                onClick={() => onToggleFilter(tag.tagId)}
                 active={activeFilters.includes(tag.tagId)}
               >
                 {tag.tagName}
