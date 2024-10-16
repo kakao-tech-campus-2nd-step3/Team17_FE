@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import Modal from './Modal'
-import { Team } from '../mocks/SearchGroupMock'
+import { Team } from '../mocks/GroupMock'
 
 interface GroupModalProps {
   modalType: string

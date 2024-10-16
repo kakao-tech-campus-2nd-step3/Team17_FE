@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
-import searchGroupMock, { Team } from '../mocks/SearchGroupMock'
 import GroupList from '../components/GroupList'
+import searchGroupMock, { Team } from '../mocks/GroupMock'
 import Modal from '../components/Modal'
 
 const MyGroup = () => {
@@ -9,6 +10,8 @@ const MyGroup = () => {
   const [isModalOpen, setModalOpen] = useState(false)
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<Team | null>(null)
+
+  const navigate = useNavigate()
 
   // 현재 사용자의 닉네임 설정(추후 카카오톡 토큰 정보로 바꾸기)
   const currentUserNickname = 'myName'
@@ -43,7 +46,7 @@ const MyGroup = () => {
   }
 
   const handleMenuClick = (group: Team) => {
-    alert(`${group.teamName} 입장하기`)
+    navigate(`/ranking/${group.Id}`)
   }
 
   const renderGroups = () => {

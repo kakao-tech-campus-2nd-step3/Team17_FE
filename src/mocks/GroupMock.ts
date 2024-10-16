@@ -1,4 +1,5 @@
 export interface Team {
+  Id: number
   teamName: string
   leaderNickname: string
   teamDescription: string
@@ -19,6 +20,7 @@ const searchGroupMock = {
     size: 7,
     content: [
       {
+        Id: 1,
         teamName: '매일매일 홈트 시작',
         leaderNickname: '나만의 홈트홈트홈트홈트홈트홈트홈트홈트',
         teamDescription:
@@ -65,6 +67,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 2,
         teamName: '매일 운동',
         leaderNickname: '매홈트',
         teamDescription: '꾸준히 합시다.',
@@ -79,6 +82,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 3,
         teamName: '홈트초보방',
         leaderNickname: '홈트1일차',
         teamDescription: '초보자이신 분 편하게 들어오세요',
@@ -109,6 +113,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 4,
         teamName: '매.운.도',
         leaderNickname: '최강운동',
         teamDescription: '아자아자 화이팅',
@@ -134,6 +139,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 5,
         teamName: '숨쉬기 운동 도전',
         leaderNickname: '운동하는 운동짐',
         teamDescription: '운동을 사랑하는 모임',
@@ -164,6 +170,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 6,
         teamName: '모각트',
         leaderNickname: 'myName',
         teamDescription: '모여서 각자 트레이닝',
@@ -194,6 +201,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 7,
         teamName: '런앤번',
         leaderNickname: '러닝러닝',
         teamDescription: '매일 러닝하는 모임(러닝머신 필수)',
@@ -209,6 +217,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 8,
         teamName: '매일 운동 도전',
         leaderNickname: 'myName',
         teamDescription: '매일매일 성실히만 합시다.',
@@ -229,6 +238,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 9,
         teamName: '내일 운동 도전',
         leaderNickname: '운동내일',
         teamDescription: '게으르지만 노력하는 사람',
@@ -254,6 +264,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 10,
         teamName: '하이핏',
         leaderNickname: '아임파인',
         teamDescription: '파인애플',
@@ -284,6 +295,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 11,
         teamName: '홈트라이',
         leaderNickname: '에브리러닝',
         teamDescription: '대학생들 운동 모임',
@@ -314,6 +326,7 @@ const searchGroupMock = {
         ],
       },
       {
+        Id: 12,
         teamName: '오운완',
         leaderNickname: '캔유러닝',
         teamDescription: '같이 운동할 사람 커먼',

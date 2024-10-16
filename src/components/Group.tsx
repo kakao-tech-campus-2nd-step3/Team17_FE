@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import { Team } from '../mocks/SearchGroupMock'
+import { Team } from '../mocks/GroupMock'
 import { Tag } from '../mocks/TagMock'
 
 interface GroupProps {
