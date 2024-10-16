@@ -1,15 +1,23 @@
-import styled from '@emotion/styled'
+import styled from '@emotion/styled';
+import LOGO from '../assets/logo.png';
+import KAKAO_LOGIN from '../assets/kakao.png';
 
-import LOGO from '../assets/logo.png'
-import KAKAO_LOGIN from '../assets/kakao.png'
+// 카카오 OAuth 설정
+const APP_KEY = '831c88c18690d9ffa567b4a7da7f8c0e';
+const REDIRECT_URI = 'https://home-try.13.125.102.156.sslip.io/api/oauth/login';
 
 const Login = () => {
-  // oauth 요청 URL
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=831c88c18690d9ffa567b4a7da7f8c0e&redirect_uri=http://localhost:8080/api/oauth/login
-`
+
+  // OAuth 요청 URL
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+  const code = new URL(document.location.toString()).searchParams.get('code')
+  // eslint-disable-next-line no-console
+  console.log(code)
+
   const handleLogin = () => {
-    window.location.href = kakaoURL
-  }
+    window.location.href = kakaoURL;
+  };
 
   return (
     <LoginWrapper>
@@ -19,15 +27,14 @@ const Login = () => {
       <KakaoButton onClick={handleLogin}>
         <img src={KAKAO_LOGIN} alt="카카오 로그인" />
       </KakaoButton>
-      <Describe>
-        카카오 로그인을 통해 &lsquo;홈트라이&lsquo;를 즐겨보세요
-      </Describe>
+      <Describe>카카오 로그인을 통해 &lsquo;홈트라이&rsquo;를 즐겨보세요</Describe>
     </LoginWrapper>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 
+// Styled Components
 const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -38,19 +45,19 @@ const LoginWrapper = styled.div`
   background-color: #f2f2f6;
   padding: 50px 15px 20px 15px;
   box-sizing: border-box;
-`
+`;
 
 const Title = styled.h1`
   font-size: 18px;
   color: #7e88a2;
-`
+`;
 
 const SubTitle = styled.h2`
   font-size: 32px;
   color: #5a80e2;
   margin-top: 10px;
   margin-bottom: 40px;
-`
+`;
 
 const KakaoButton = styled.button`
   border: none;
@@ -60,10 +67,10 @@ const KakaoButton = styled.button`
   align-items: center;
   cursor: pointer;
   margin-top: 50px;
-`
+`;
 
 const Describe = styled.p`
   font-size: 12px;
   color: #888888;
   margin-top: 5px;
-`
+`;
