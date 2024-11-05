@@ -1,105 +1,132 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import styled from '@emotion/styled'
-import GroupList from '../components/GroupList'
-import searchGroupMock, { Team } from '../mocks/GroupMock'
-import Modal from '../components/Modal'
+import { useNavigate } from 'react-router-dom'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import {
+  getGroup,
+  Team,
+  verifyGroupPassword,
+  TeamResponse,
+} from '../api/getGroup'
+import GroupListContainer from '../components/GroupListContainer'
+import GroupModal from '../components/GroupModal'
+import TagFilter from '../components/TagFilter'
+import SearchBar from '../components/SearchBar'
+import tagMock from '../mocks/TagMock'
 
-const MyGroup = () => {
-  const [groupType, setGroupType] = useState('joined')
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
-  const [selectedGroup, setSelectedGroup] = useState<Team | null>(null)
+const Error = () => (
+  <ErrorContainer>
+    <ErrorMessage>오류가 발생했습니다.</ErrorMessage>
+  </ErrorContainer>
+)
 
+const Loading = () => (
+  <LoadingContainer>
+    <LoadingText>로딩 중...</LoadingText>
+  </LoadingContainer>
+)
+
+const SearchGroup = () => {
+  const [activeFilters, setActiveFilters] = useState<number[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [modalType, setModalType] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState<Team | undefined>(
+    undefined
+  )
+  const [password, setPassword] = useState('')
+  const [groups, setGroups] = useState<Team[]>([])
   const navigate = useNavigate()
 
-  // 현재 사용자의 닉네임 설정(추후 카카오톡 토큰 정보로 바꾸기)
-  const currentUserNickname = 'myName'
+  const {
+    isLoading: groupsLoading,
+    isError: groupsError,
+    data,
+  } = useQuery<TeamResponse, Error, Team[]>({
+    queryKey: ['groupPage', { searchTerm, activeFilters }],
+    queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
+    select: (response: TeamResponse) => response.content,
+  })
 
-  const filteredGroups = searchGroupMock.Page.content.filter((group) =>
-    groupType === 'joined'
-      ? group.leaderNickname !== currentUserNickname
-      : group.leaderNickname === currentUserNickname
-  )
+  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value)
+  }
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setGroupType(event.target.value)
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      setGroups(data)
+    }
+  }, [data])
+
+  const verifyPasswordMutation = useMutation({
+    mutationFn: (enteredPassword: string) =>
+      verifyGroupPassword(selectedGroup!.id, enteredPassword),
+  })
+
+  const toggleFilter = (tagId: number | null | undefined) => {
+    if (tagId !== null && tagId !== undefined) {
+      setActiveFilters(
+        activeFilters.includes(tagId)
+          ? activeFilters.filter((id) => id !== tagId)
+          : [...activeFilters, tagId]
+      )
+    }
+  }
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value)
   }
 
   const handleGroupClick = (group: Team) => {
     setSelectedGroup(group)
-    setModalOpen(true)
+    setPassword('')
+    setModalType(group.hasPassword ? 'password' : 'info')
   }
 
   const closeModal = () => {
-    setModalOpen(false)
-    setIsSecondModalOpen(false)
+    setModalType('')
+    setPassword('')
   }
 
-  const openSecondModal = () => {
-    setIsSecondModalOpen(true)
+  const joinGroup = (group: Team) => {
+    alert(`${group.teamName}가입이 완료되었습니다.`)
   }
 
-  const closeSecondModal = () => {
-    setIsSecondModalOpen(false)
-    setModalOpen(false)
+  const navigateToAddGroup = () => {
+    navigate('/addGroup')
   }
 
-  const handleMenuClick = (group: Team) => {
-    navigate(`/ranking/${group.Id}`)
-  }
+  if (groupsLoading) return <Loading />
+  if (groupsError) return <Error />
 
-  const renderGroups = () => {
-    if (filteredGroups.length === 0) {
-      return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>
-    }
-    return (
-      <GroupList
-        groups={filteredGroups}
-        showMenuButton
-        onCardClick={handleMenuClick}
-        onButtonClick={handleGroupClick}
-      />
-    )
-  }
-
-  const modalContent =
-    groupType === 'joined' ? '그룹 탈퇴하기' : '그룹 삭제하기'
-
-  // 백엔드 api 확인 후 그룹 구조 변경
   return (
     <PageWrapper>
       <PageContainer>
-        <PageTitle>나의 그룹</PageTitle>
-        <DropdownContainer>
-          <select value={groupType} onChange={handleSelectChange}>
-            <option value="joined">가입한 그룹</option>
-            <option value="created">내가 만든 그룹</option>
-          </select>
-        </DropdownContainer>
-        {renderGroups()}
-        {/* 첫 번째 모달 */}
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <ModalButton onClick={openSecondModal}>{modalContent}</ModalButton>
-        </Modal>
-
-        {/* 두 번째 모달 */}
-        <Modal isOpen={isSecondModalOpen} onClose={closeSecondModal}>
-          <ModalTitle>{modalContent}</ModalTitle>
-          <ModalText
-            placeholder={`'${selectedGroup?.teamName}'을 ${groupType === 'joined' ? '탈퇴하시겠습니까?' : '삭제하시겠습니까?'}`}
-          />
-          <ModalBtnContainer>
-            <CancelBtn onClick={closeSecondModal}>취소</CancelBtn>
-            <DoneBtn>완료</DoneBtn>
-          </ModalBtnContainer>
-        </Modal>
+        <PageTitle>그룹 탐색</PageTitle>
+        <SearchBar onChange={handleSearchChange} value={searchTerm} />
+        <TagFilter
+          tags={tagMock.tagList}
+          activeFilters={activeFilters}
+          onToggleFilter={toggleFilter}
+        />
+        <GroupListContainer
+          groups={groups}
+          searchTerm={searchTerm}
+          onCardClick={handleGroupClick}
+        />
+        <GroupModal
+          modalType={modalType}
+          selectedGroup={selectedGroup}
+          password={password}
+          onPasswordChange={handlePasswordChange}
+          onVerifyPassword={() => verifyPasswordMutation.mutate(password)}
+          onClose={closeModal}
+          onJoinGroup={joinGroup}
+        />
       </PageContainer>
+      <AddButton onClick={navigateToAddGroup}>+</AddButton>
     </PageWrapper>
   )
 }
-
-export default MyGroup
 
 /* Page */
 const PageWrapper = styled.div`
@@ -130,73 +157,54 @@ const PageTitle = styled.p`
   font-weight: bold;
 `
 
-/* Dropdown */
-const DropdownContainer = styled.div`
+const AddButton = styled.button`
+  align-self: flex-end;
+  margin-top: auto;
+  position: absolute;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: flex-end;
-  margin: 0px 20px 10px 0px;
-  width: 100%;
-  select {
-    padding: 4px 0px;
-    border-radius: 8px;
-    background-color: transparent;
-    border: 1px solid #ccc;
-    font-size: 12px;
-    cursor: pointer;
-  }
-`
-
-/* Modal */
-const ModalTitle = styled.div`
-  font-size: 20px;
-  width: 100%;
-  text-align: left;
-  padding: 10px;
-  box-sizing: border-box;
-`
-
-const ModalText = styled.input`
-  width: 90%;
-  padding: 0px 7px;
-  margin: 10px 0px;
+  justify-content: center;
+  align-items: center;
+  bottom: 100px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: rgba(181, 195, 233, 0.8);
+  color: white;
+  font-size: 24px;
   border: none;
-  outline: none;
-`
-
-const ModalBtnContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-`
-
-const CancelBtn = styled.div`
-  padding: 5px 15px;
-  color: #969393;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-`
-
-const DoneBtn = styled.div`
-  padding: 5px;
-  color: #6d86cb;
-  cursor: pointer;
-`
-
-const ModalButton = styled.button`
-  background: none;
-  border: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  padding: 0;
   &:hover {
-    color: #b5c3e9;
+    background-color: #b5c3e9;
   }
 `
 
-const NoGroupsMessage = styled.div`
-  font-size: 18px;
-  margin-top: 40px;
-  padding: 100px 0;
-  text-align: center;
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
 `
+
+const LoadingText = styled.p`
+  font-size: 20px;
+  color: #555;
+`
+
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #ffebee;
+`
+
+const ErrorMessage = styled.p`
+  font-size: 20px;
+  color: #b71c1c;
+`
+
+export default SearchGroup

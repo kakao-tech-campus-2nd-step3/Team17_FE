@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import { Team } from '../mocks/GroupMock'
-import { Tag } from '../mocks/TagMock'
+import { Tag, Team } from '../api/getGroup'
 
 interface GroupProps {
   group: Team
@@ -17,11 +16,7 @@ const Group: React.FC<GroupProps> = ({
   onButtonClick,
 }) => {
   const getTagAttributes = (tags: Tag[]): string[] => {
-    return tags.map((tag) => tag.tagName)
-  }
-  // Group card 클릭 이벤트 핸들러
-  const handleCardClick = () => {
-    onCardClick(group)
+    return tags.map((tag) => `#${tag.tagName}`)
   }
 
   // Menu 버튼 클릭 이벤트 핸들러
@@ -31,20 +26,22 @@ const Group: React.FC<GroupProps> = ({
       onButtonClick(group)
     }
   }
+
   Group.defaultProps = {
     onButtonClick: () => {},
   }
+
   return (
-    <GroupCard onClick={handleCardClick}>
+    <GroupCard onClick={() => onCardClick(group)}>
       <GroupName>{group.teamName}</GroupName>
       <GroupDetails>{group.leaderNickname}</GroupDetails>
       <GroupInfo>
         {group.currentParticipants}/{group.maxParticipants}명
-        {group.password && (
+        {group.hasPassword && (
           <LockIcon className="material-symbols-outlined">lock</LockIcon>
         )}
       </GroupInfo>
-      <TagLine>#{getTagAttributes(group.tagList).join(' # ')}</TagLine>
+      <TagLine>{getTagAttributes(group.tagList).join(' ')}</TagLine>
       {showMenuButton && (
         <MenuButton onClick={handleButtonClick}>
           <Icon className="material-symbols-outlined">more_vert</Icon>

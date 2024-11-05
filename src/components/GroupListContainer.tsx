@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import GroupList from './GroupList'
-import { Team } from '../mocks/GroupMock'
+import { Team } from '../api/getGroup'
 
 interface GroupListContainerProps {
   groups: Team[]
@@ -18,9 +18,8 @@ const GroupListContainer: React.FC<GroupListContainerProps> = ({
     group.teamName.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (filteredGroups.length === 0) {
-    return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>
-  }
+  if (!groups || groups.length === 0)
+    return <NoGroupsMessage>일치하는 그룹이 없습니다.</NoGroupsMessage>
 
   return (
     <GroupList

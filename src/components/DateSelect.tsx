@@ -83,7 +83,6 @@ const DateSelectContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 25px;
 `
 
 const DateSelecter = styled.div`

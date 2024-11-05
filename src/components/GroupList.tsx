@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import Group from './Group'
-import { Team } from '../mocks/GroupMock'
+import { Team } from '../api/getGroup'
 
 interface GroupListProps {
   groups: Team[]

@@ -1,9 +1,13 @@
 import styled from '@emotion/styled'
 
-const Error = () => {
+interface ErrorProps {
+  name: string
+}
+
+const Error = ({ name }: ErrorProps) => {
   return (
     <ErrorWrapper>
-      <ErrorText>메인화면 데이터 불러오기에 실패했습니다</ErrorText>
+      <ErrorText>{name} 데이터 불러오기에 실패했습니다</ErrorText>
       <ErrorSubText>다시 시도해주세요!</ErrorSubText>
     </ErrorWrapper>
   )

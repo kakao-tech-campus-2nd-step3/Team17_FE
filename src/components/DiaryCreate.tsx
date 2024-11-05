@@ -1,16 +1,49 @@
 import styled from '@emotion/styled'
+import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import axiosInstance from '../api/axiosInstance'
+import Modal from './Modal'
 
-interface DiaryCreateProps {
-  newDiary: string
-  setNewDiary: (value: string) => void
-  onSubmit: () => void
+const postDiary = async (memo: string) => {
+  const accessToken = localStorage.getItem('authToken')
+
+  const response = await axiosInstance.post(
+    '/api/diary',
+    {
+      memo,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  )
+  return response.data
 }
 
-const DiaryCreate: React.FC<DiaryCreateProps> = ({
-  newDiary,
-  setNewDiary,
-  onSubmit,
-}) => {
+const DiaryCreate = () => {
+  const [newDiary, setNewDiary] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const mutationDiary = useMutation<string, Error, string>({
+    mutationFn: postDiary,
+    onSuccess: () => {
+      setNewDiary('')
+    },
+  })
+
+  const onSubmit = () => {
+    if (newDiary.trim() === '') {
+      setIsModalOpen(true)
+      return
+    }
+    mutationDiary.mutate(newDiary)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
+
   return (
     <DiaryCreateWrapper>
       <TitleContainer>
@@ -22,6 +55,15 @@ const DiaryCreate: React.FC<DiaryCreateProps> = ({
         onChange={(e) => setNewDiary(e.target.value)}
         placeholder="일기를 작성하세요"
       />
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <ModalText>
+          <AlertText>일기 텍스트가 비어있습니다</AlertText>
+          <AlertText>일기를 작성해주세요!</AlertText>
+        </ModalText>
+        <ModalBtnContainer>
+          <DoneBtn onClick={handleCloseModal}>확인</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
     </DiaryCreateWrapper>
   )
 }
@@ -59,6 +101,28 @@ const TextArea = styled.textarea`
   box-sizing: border-box;
   padding: 15px;
   height: 120px;
+`
+const ModalText = styled.div`
+  margin-top: 10px;
+`
+
+const AlertText = styled.div`
+  color: #4a4a4a;
+  text-align: center;
+  margin-top: 5px;
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const DoneBtn = styled.div`
+  padding: 5px;
+  color: #6d86cb;
+  cursor: pointer;
 `
 
 export default DiaryCreate

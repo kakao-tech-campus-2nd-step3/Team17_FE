@@ -1,7 +1,14 @@
 import styled from '@emotion/styled'
+import { DateTime } from 'luxon'
+
+interface DiaryData {
+  id: number
+  createdAt: string
+  memo: string
+}
 
 interface TodayDiaryProps {
-  diaryData: { id: number; time: string; memo: string }[]
+  diaryData: DiaryData[]
   // setDiaryData: React.Dispatch<React.SetStateAction<{ time: string; memo: string; }[]>>;
 }
 
@@ -11,17 +18,21 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
       <TitleContainer>
         <Title>오늘의 일기</Title>
       </TitleContainer>
-      {diaryData.map((diary) => (
-        <DiaryContainer key={diary.id}>
-          <DiaryTime>
-            {new Date(diary.time).toLocaleTimeString('en-GB', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </DiaryTime>
-          <DiaryContent>{diary.memo}</DiaryContent>
-        </DiaryContainer>
-      ))}
+      {Array.isArray(diaryData) && diaryData.length > 0 ? (
+        diaryData.map((diary) => (
+          <DiaryContainer key={diary.id}>
+            <DiaryTime>
+              {DateTime.fromISO(diary.createdAt, { zone: 'utc' })
+                .setZone('Asia/Seoul')
+                .toFormat('HH:mm')}
+            </DiaryTime>
+            <DiaryContent>{diary.memo}</DiaryContent>
+          </DiaryContainer>
+        ))
+      ) : (
+        <NoDiaryMessage>오늘의 일기가 없습니다</NoDiaryMessage>
+      )}
+      {}
     </TodayDiaryWrapper>
   )
 }
@@ -81,6 +92,14 @@ const DiaryContent = styled.div`
   padding: 15px;
   font-size: 14px;
   color: #555454;
+`
+
+const NoDiaryMessage = styled.div`
+  text-align: center;
+  color: #888888;
+  font-size: 14px;
+  margin-top: 25px;
+  margin-bottom: 30px;
 `
 
 export default TodayDiary

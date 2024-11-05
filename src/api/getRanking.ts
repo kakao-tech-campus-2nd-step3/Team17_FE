@@ -5,34 +5,21 @@ interface GetRankingParams {
   page: number
   size: number
   sort: string
-  year: number
-  month: number
-  day: number
+  date: string
 }
 
 interface Ranker {
   name: string
-  time: string
+  ranking: number
+  totalExerciseTime: string
 }
 
 interface RankingResponse {
   myRanking: number
   myNickname: string
   myTime: string
-  page: {
-    totalPages: number
-    totalElements: number
-    size: number
+  slice: {
     content: Ranker[]
-    number: number
-    sort: {
-      empty: boolean
-      sorted: boolean
-      unsorted: boolean
-    }
-    first: boolean
-    last: boolean
-    numberOfElements: number
     pageable: {
       pageNumber: number
       pageSize: number
@@ -45,6 +32,16 @@ interface RankingResponse {
       unpaged: boolean
       paged: boolean
     }
+    first: boolean
+    last: boolean
+    size: number
+    number: number
+    sort: {
+      empty: boolean
+      sorted: boolean
+      unsorted: boolean
+    }
+    numberOfElements: number
     empty: boolean
   }
 }
@@ -54,12 +51,10 @@ const getRanking = async ({
   page,
   size,
   sort,
-  year,
-  month,
-  day,
+  date,
 }: GetRankingParams): Promise<RankingResponse> => {
   const response = await axiosInstance.get(`/api/team/${groupId}/ranking`, {
-    params: { page, size, sort, year, month, day },
+    params: { page, size, sort, date },
   })
   return response.data
 }

@@ -1,23 +1,40 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import DateSelect from './DateSelect'
+import { useMutation } from '@tanstack/react-query'
 import { Exercise } from './ExerciseList'
-// import axiosInstance from "../api/axiosInstance";
+import putStopExercise from '../api/putStopExercise'
 
 interface TimerProps {
   totalTime: number
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
   isAnyActive: boolean
+  selectedDate: Date
+  activeExerciseId?: number
 }
 
 const Timer: React.FC<TimerProps> = ({
   totalTime,
   setExerciseList,
   isAnyActive,
+  selectedDate,
+  activeExerciseId,
 }) => {
+  useEffect(() => {}, [totalTime])
+
+  const stopExercise = useMutation({
+    mutationFn: putStopExercise,
+  })
+
   const [isActive, setIsActive] = useState(false)
   const [time, setTime] = useState(totalTime)
-  const [selectedDate, setSelectedDate] = useState(new Date())
+
+  useEffect(() => {
+    if (typeof totalTime === 'number' && !Number.isNaN(totalTime)) {
+      setTime(totalTime)
+    } else {
+      setTime(0)
+    }
+  }, [totalTime])
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
@@ -33,14 +50,18 @@ const Timer: React.FC<TimerProps> = ({
     return () => clearInterval(interval)
   }, [isActive])
 
-  // useEffect(() => {
-  //     setTime(0)
-  //     setIsActive(false)
-  // }, [selectedDate])
+  useEffect(() => {
+    setTime(0)
+    setIsActive(false)
+  }, [selectedDate])
 
   useEffect(() => {
-    setTime(totalTime)
-  }, [totalTime])
+    if (typeof totalTime === 'number' && !Number.isNaN(totalTime)) {
+      setTime(totalTime)
+    } else {
+      setTime(0)
+    }
+  }, [totalTime, selectedDate])
 
   const handleStop = () => {
     setIsActive(false)
@@ -50,20 +71,13 @@ const Timer: React.FC<TimerProps> = ({
         isActive: false,
       }))
     })
+    if (activeExerciseId) {
+      stopExercise.mutate(activeExerciseId)
+    }
   }
 
-  // 백엔드에서 시간 받아옴
-  // const fetchTime = async (date: Date) => {
-  //     const response = await axiosInstance.get(`/api/exercise/...`)
-  //     const serverTime = response.data.time
-  //     setTime(serverTime)
-  // };
-
-  // useEffect(() => {
-  //     fetchTime(selectedDate)
-  // }, [selectedDate])
-
   const formatTime = (runningTime: number) => {
+    if (Number.isNaN(runningTime)) return '00:00:00'
     const hours = Math.floor((runningTime / 3600000) % 24)
     const minutes = Math.floor((runningTime / 60000) % 60)
     const seconds = Math.floor((runningTime / 1000) % 60)
@@ -72,10 +86,6 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <div>
-      <DateSelect
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
       <TimerContainer>
         <TimerContent>{formatTime(time)}</TimerContent>
       </TimerContainer>

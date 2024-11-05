@@ -1,51 +1,49 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
-import { Duration } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import DateSelect from '../components/DateSelect'
-import RankingMock from '../mocks/RankingMock'
 import chatbubble from '../assets/chatbubble.svg'
 import getRanking from '../api/getRanking'
+import Loading from '../components/Loading'
+import Error from '../components/Error'
+
+export const formatDuration = (isoDuration: string) => {
+  const duration = Duration.fromISO(isoDuration)
+  const hours = String(duration.hours).padStart(2, '0')
+  const minutes = String(duration.minutes).padStart(2, '0')
+  const seconds = String(duration.seconds).padStart(2, '0')
+  return `${hours}:${minutes}:${seconds}`
+}
 
 const Ranking = () => {
   const { groupId } = useParams()
-
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [rankData, setRankData] = useState(RankingMock)
+  const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
-  const formatDuration = (isoDuration: string) => {
-    const duration = Duration.fromISO(isoDuration)
-    const hours = String(duration.hours).padStart(2, '0')
-    const minutes = String(duration.minutes).padStart(2, '0')
-    const seconds = String(duration.seconds).padStart(2, '0')
-    return `${hours}:${minutes}:${seconds}`
-  }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['ranking', groupId],
+    queryFn: () =>
+      getRanking({
+        groupId: groupId || '',
+        page: 0,
+        size: 8,
+        sort: 'time,asc',
+        date: formattedDate,
+      }),
+    retry: 1,
+  })
+
+  const [rankData, setRankData] = useState(data)
 
   useEffect(() => {
-    const fetchRankingData = async () => {
-      try {
-        const year = selectedDate.getFullYear()
-        const month = selectedDate.getMonth() + 1
-        const day = selectedDate.getDate()
+    setRankData(data)
+  }, [data])
 
-        const response = await getRanking({
-          groupId: groupId || '',
-          page: 0,
-          size: 8,
-          sort: 'time,asc',
-          year,
-          month,
-          day,
-        })
-        setRankData(response)
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('랭크 데이터 가져오기 실패', error)
-      }
-    }
-    fetchRankingData()
-  }, [groupId, selectedDate])
+  if (isLoading) return <Loading />
+  if (isError) return <Error name="랭킹화면" />
 
   return (
     <RankingWrapper>
@@ -64,23 +62,27 @@ const Ranking = () => {
           />
         </DateContainer>
         <EntireRank>
-          {rankData.page.content.map((ranker, index) => (
+          {rankData?.slice?.content?.map((ranker, index) => (
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
-              <RankerTime>{formatDuration(ranker.time)}</RankerTime>
+              <RankerTime>
+                {formatDuration(ranker.totalExerciseTime)}
+              </RankerTime>
             </RankElement>
-          ))}
+          )) || <Error name="랭크" />}
         </EntireRank>
       </RankContainer>
       <MyRank>
-        <MyRankElement ranking={rankData.myRanking}>
-          <MyRankerCount ranking={rankData.myRanking}>
-            {rankData.myRanking}
-          </MyRankerCount>
-          <RankerName>{rankData.myNickname}</RankerName>
-          <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
-        </MyRankElement>
+        {rankData?.myRanking && (
+          <MyRankElement ranking={rankData.myRanking}>
+            <MyRankerCount ranking={rankData.myRanking}>
+              {rankData.myRanking}
+            </MyRankerCount>
+            <RankerName>{rankData.myNickname}</RankerName>
+            <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
+          </MyRankElement>
+        )}
       </MyRank>
       <Link to={`/chat/${groupId}`}>
         <ChatButton>

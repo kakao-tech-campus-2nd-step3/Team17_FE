@@ -1,5 +1,5 @@
 export interface Team {
-  Id: number
+  id?: number
   teamName: string
   leaderNickname: string
   teamDescription: string
