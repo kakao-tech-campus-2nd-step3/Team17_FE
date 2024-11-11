@@ -1,122 +1,137 @@
 /* eslint-disable no-console */
-import styled from '@emotion/styled'
-import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { Client, IMessage } from '@stomp/stompjs'
-import axios from 'axios'
+import styled from '@emotion/styled'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Client, IMessage, Frame } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
+import { fetchInitialMessages, ChatMessage } from '../api/getChatting'
+import getMypage from '../api/getMypage'
 
-export interface ChatMessage {
-  nickname: string
-  message: string
-  createAt: string
-}
 interface MessageProps {
   isOwn: boolean
 }
 
+const Error = () => (
+  <ErrorContainer>
+    <ErrorMessage>오류가 발생했습니다.</ErrorMessage>
+  </ErrorContainer>
+)
+
+const Loading = () => (
+  <LoadingContainer>
+    <LoadingText>로딩 중...</LoadingText>
+  </LoadingContainer>
+)
+
 const Chatting = () => {
-  const { roomId } = useParams<{ roomId: string }>()
-  const currentUser = { nickname: 'GuestUser' }
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      nickname: '박길동',
-      message:
-        '저희 방은 유산소를 합니다.\n사이클, 런닝머신, 복합운동 등 종류는 자율입니다. 😄',
-      createAt: new Date().toISOString(),
-    },
-    {
-      nickname: '김길동',
-      message: '환영합니다.',
-      createAt: new Date().toISOString(),
-    },
-  ])
+  const { groupId } = useParams<{ groupId: string }>()
+  const queryClient = useQueryClient()
   const [inputMessage, setInputMessage] = useState('')
   const stompClient = useRef<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
+
+  const {
+    data: messages,
+    error: chattingError,
+    isLoading: chattingLoading,
+  } = useQuery<ChatMessage[], Error>({
+    queryKey: ['chatMessages', groupId],
+    queryFn: () => {
+      return fetchInitialMessages(groupId ?? '')
+    },
+  })
+
+  const {
+    data: userData,
+    isLoading: userLoading,
+    isError: userError,
+  } = useQuery({
+    queryKey: ['userDetails'],
+    queryFn: getMypage,
+    retry: 1,
+  })
+
+  const currentUser = userData?.nickname
 
   const handlePrev = () => {
     navigate(-1)
   }
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/chat/${roomId}/messages`
-        )
-        setMessages(response.data.content)
-      } catch (error) {
-        console.error('Failed to fetch chat messages', error)
+    const connectWebSocket = () => {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        console.error('Authentication token not found')
+        return
       }
-    }
+      const socketUrl = `http://13.125.102.156:8080/api/team/chatting/websocket?access_token=${token}`
+      const socket = new SockJS(socketUrl)
 
-    const connect = () => {
-      const client = new Client({
-        brokerURL: 'ws://localhost:3000/ws-stomp',
-        onConnect: () => {
-          console.log('Connected!')
+      stompClient.current = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+        onConnect: (frame: Frame) => {
+          console.log('Connected:', frame)
           stompClient.current?.subscribe(
-            `/sub/cache/${roomId}`,
+            `/sub/${groupId}`,
             (message: IMessage) => {
               const newMessage = JSON.parse(message.body) as ChatMessage
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                  ...newMessage,
-                  createAt: new Date(newMessage.createAt).toLocaleString(),
-                },
-              ])
-              scrollToBottom()
+              queryClient.setQueryData<ChatMessage[]>(
+                ['chatMessages', groupId],
+                (old) => [...(old ?? []), newMessage]
+              )
             }
           )
         },
+        onStompError: (frame: Frame) => {
+          console.error('STOMP Error:', frame.headers.message)
+          alert(`Connection error: ${frame.headers.message}`)
+        },
+        onWebSocketClose: (evt) => {
+          console.error('WebSocket closed:', evt)
+          if (evt.code === 1006) {
+            console.log('Reconnecting...')
+          }
+        },
+        onWebSocketError: (evt) => {
+          console.error('WebSocket error:', evt)
+        },
       })
-      stompClient.current = client
       stompClient.current.activate()
     }
 
-    fetchMessages()
-    connect()
+    connectWebSocket()
     return () => {
       stompClient.current?.deactivate()
     }
-  }, [roomId])
+  }, [groupId, queryClient])
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  if (chattingLoading || userLoading) return <Loading />
+  if (chattingError || userError) return <Error />
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  // eslint-disable-next-line
-  // 메시지 발송
-  const sendMessage = () => {
-    /*
-      if (stompClient.current && inputMessage) {
-        stompClient.current.publish({
-          destination: `/pub/cache`,
-          body: JSON.stringify({
-            nickname: currentUser.nickname,
-            message: inputMessage,
-            createdAt: new Date().toISOString()
-          })
-        });
-        setInputMessage("");
-      }
-      */
-    if (inputMessage) {
-      // 모의 데이터를 생성하여 메시지 목록에 추가
-      const newMessage = {
-        nickname: currentUser.nickname,
-        message: inputMessage,
-        createAt: new Date().toISOString(),
-      }
-      setMessages((prevMessages) => [...prevMessages, newMessage])
-      setInputMessage('')
+  const sendMessage = async () => {
+    if (!inputMessage.trim()) return
+    if (!stompClient.current || !stompClient.current.active) {
+      return
     }
+
+    const messagePayload = {
+      nickname: currentUser || 'Unknown User',
+      message: inputMessage,
+    }
+
+    stompClient.current.publish({
+      destination: `/pub/${groupId}`,
+      body: JSON.stringify(messagePayload),
+      skipContentLengthHeader: true,
+    })
+
+    setInputMessage('')
   }
 
   return (
@@ -126,32 +141,32 @@ const Chatting = () => {
           <Prev onClick={handlePrev}>{'<'}</Prev>
           <PageTitle>매일 운동 도전</PageTitle>
         </HeaderContainer>
-        <div className="messages" style={{ flex: 1, overflow: 'auto' }}>
-          {messages.map((msg) => (
-            <MessageContainer
-              key={msg.nickname + msg.createAt}
-              isOwn={msg.nickname === currentUser.nickname}
-            >
-              <MessageInfo isOwn={msg.nickname === currentUser.nickname}>
-                {msg.nickname}
-              </MessageInfo>
-              <MessageContentContainer
-                isOwn={msg.nickname === currentUser.nickname}
+        <MessageBox>
+          {messages &&
+            Array.isArray(messages) &&
+            messages.map((msg: ChatMessage) => (
+              <MessageContainer
+                key={msg.chatId}
+                isOwn={msg.nickName === currentUser}
               >
-                <MessageBubble isOwn={msg.nickname === currentUser.nickname}>
-                  {msg.message}
-                </MessageBubble>
-                <TimeStamp isOwn={msg.nickname === currentUser.nickname}>
-                  {new Date(msg.createAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </TimeStamp>
-              </MessageContentContainer>
-            </MessageContainer>
-          ))}
+                <MessageInfo isOwn={msg.nickName === currentUser}>
+                  {msg.nickName}
+                </MessageInfo>
+                <MessageContentContainer isOwn={msg.nickName === currentUser}>
+                  <MessageBubble isOwn={msg.nickName === currentUser}>
+                    {msg.message}
+                  </MessageBubble>
+                  <TimeStamp isOwn={msg.nickName === currentUser}>
+                    {new Date().toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </TimeStamp>
+                </MessageContentContainer>
+              </MessageContainer>
+            ))}
           <div ref={messagesEndRef} />
-        </div>
+        </MessageBox>
       </PageContainer>
       <InputContainer>
         <StyledInput
@@ -225,17 +240,26 @@ const PageTitle = styled.p`
 `
 
 /* Chat */
+const MessageBox = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow-y: auto;
+`
+
 const MessageContainer = styled.div<MessageProps>`
   display: flex;
   flex-direction: column;
-  align-items: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
+  align-self: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
   margin-bottom: 10px;
 `
 
 const MessageContentContainer = styled.div<MessageProps>`
   display: flex;
+  justify-content: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
   flex-direction: ${(props) => (props.isOwn ? 'row-reverse' : 'row')};
   align-items: center;
+  width: 100%;
 `
 
 const MessageBubble = styled.div<MessageProps>`
@@ -246,8 +270,8 @@ const MessageBubble = styled.div<MessageProps>`
   font-size: 13px;
   line-height: 1.4;
 
-  /* Align the message to the right if it's the currentUser's message */
   background-color: ${(props) => (props.isOwn ? '#EDF1FA' : '#F3F2F2')};
+  align-self: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
   margin: ${(props) => (props.isOwn ? '0 20px 0 5px' : '0 5px 0 20px')};
 `
 
@@ -305,4 +329,27 @@ const StyledButton = styled.button`
     background-color: gray;
     color: white;
   }
+`
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`
+
+const LoadingText = styled.p`
+  font-size: 20px;
+`
+
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`
+
+const ErrorMessage = styled.p`
+  font-size: 20px;
 `

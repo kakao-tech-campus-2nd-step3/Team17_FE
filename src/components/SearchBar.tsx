@@ -1,11 +1,12 @@
 import styled from '@emotion/styled'
 
 interface SearchBarProps {
+  onSearch: () => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   value: string
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onChange, value }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onChange, onSearch, value }) => {
   return (
     <SearchContainer>
       <StyledSearchBar
@@ -13,7 +14,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onChange, value }) => {
         onChange={onChange}
         value={value}
       />
-      <SearchIcon className="material-symbols-outlined" isActive={false}>
+      <SearchIcon
+        onClick={onSearch}
+        className="material-symbols-outlined"
+        isActive={false}
+      >
         search
       </SearchIcon>
     </SearchContainer>

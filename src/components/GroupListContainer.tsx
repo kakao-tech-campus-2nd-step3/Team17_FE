@@ -19,7 +19,12 @@ const GroupListContainer: React.FC<GroupListContainerProps> = ({
   )
 
   if (!groups || groups.length === 0)
-    return <NoGroupsMessage>일치하는 그룹이 없습니다.</NoGroupsMessage>
+    return (
+      <NoGroupsMessage>
+        일치하는 그룹이 <br />
+        없습니다.
+      </NoGroupsMessage>
+    )
 
   return (
     <GroupList

@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import postGroup from '../api/postGroup'
 import Modal from '../components/Modal'
-import tagMock from '../mocks/TagMock'
 import TagFilter from '../components/TagFilter'
 
 const AddGroup = () => {
@@ -51,18 +50,37 @@ const AddGroup = () => {
     navigate(-1)
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (
-      !inputs.teamname ||
-      !inputs.participant ||
-      Number.isNaN(Number(inputs.participant))
-    ) {
-      setModalMessage('정보를 올바르게 작성해주세요')
+    if (!inputs.teamname) {
+      setModalMessage('그룹명을 입력해주세요.')
       setModalOpen(true)
-      setSubmissionSuccess(false)
       return
     }
+    if (!inputs.participant || Number.isNaN(Number(inputs.participant))) {
+      setModalMessage('모집인원을 올바르게 입력해주세요.')
+      setModalOpen(true)
+      return
+    }
+    if (inputs.participant && Number(inputs.participant) > 30) {
+      setModalMessage('모집인원은 30명 이하로 작성해주세요.')
+      setModalOpen(true)
+      return
+    }
+    if (
+      inputs.password &&
+      (inputs.password.length < 4 || inputs.password.length > 16)
+    ) {
+      setModalMessage('비밀번호는 4자리에서 16자리 사이로 설정해주세요.')
+      setModalOpen(true)
+      return
+    }
+    if (!inputs.comment) {
+      setModalMessage('그룹 설명을 입력해주세요.')
+      setModalOpen(true)
+      return
+    }
+
     const groupData = {
       teamName: inputs.teamname,
       teamDescription: inputs.comment,
@@ -70,14 +88,20 @@ const AddGroup = () => {
       password: inputs.password ? inputs.password : null,
       tagIdList: activeFilters,
     }
-    // 추후 서버로 데이터를 보내는 로직 구현
-    // eslint-disable-next-line
-    console.log('Submitting group data:', groupData)
-    setModalMessage('그룹 생성이 완료되었습니다.')
-    setModalOpen(true)
-    // eslint-disable-next-line no-console
-    console.log('Submitting group data- after:', groupData)
-    setSubmissionSuccess(true)
+    postGroup(groupData)
+      .then(() => {
+        setSubmissionSuccess(true)
+        navigate('/searchgroup')
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 409) {
+          setModalMessage('해당 그룹 이름은 이미 존재하는 그룹 이름입니다.')
+        } else {
+          setModalMessage('그룹 생성에 실패했습니다. 다시 시도해주세요.')
+        }
+        setSubmissionSuccess(false)
+        setModalOpen(true)
+      })
   }
 
   return (
@@ -119,7 +143,6 @@ const AddGroup = () => {
           />
           <FieldName>태그</FieldName>
           <TagFilter
-            tags={tagMock.tagList}
             activeFilters={activeFilters}
             onToggleFilter={toggleFilter}
           />
@@ -252,7 +275,8 @@ const ModalTitle = styled.div`
 
 const ModalText = styled.input`
   width: 96%;
-  padding: 0px 7px;
+  font-size: 12px;
+  padding: 0px 6px;
   margin: 10px 0px;
   box-sizing: border-box;
   border: none;

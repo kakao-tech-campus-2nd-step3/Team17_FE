@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '../api/axiosInstance'
 import Modal from './Modal'
 
@@ -22,6 +22,8 @@ const postDiary = async (memo: string) => {
 }
 
 const DiaryCreate = () => {
+  const queryClient = useQueryClient()
+
   const [newDiary, setNewDiary] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -29,6 +31,7 @@ const DiaryCreate = () => {
     mutationFn: postDiary,
     onSuccess: () => {
       setNewDiary('')
+      queryClient.invalidateQueries({ queryKey: ['diary'] })
     },
   })
 

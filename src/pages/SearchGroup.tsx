@@ -1,18 +1,12 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import {
-  getGroup,
-  Team,
-  verifyGroupPassword,
-  TeamResponse,
-} from '../api/getGroup'
+import { useQuery } from '@tanstack/react-query'
+import { getGroup, Team, TeamResponse } from '../api/getGroup'
 import GroupListContainer from '../components/GroupListContainer'
 import GroupModal from '../components/GroupModal'
 import TagFilter from '../components/TagFilter'
 import SearchBar from '../components/SearchBar'
-import tagMock from '../mocks/TagMock'
 
 const Error = () => (
   <ErrorContainer>
@@ -29,6 +23,7 @@ const Loading = () => (
 const SearchGroup = () => {
   const [activeFilters, setActiveFilters] = useState<number[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [initialLoad, setInitialLoad] = useState(true)
   const [modalType, setModalType] = useState('')
   const [selectedGroup, setSelectedGroup] = useState<Team | undefined>(
     undefined
@@ -40,20 +35,24 @@ const SearchGroup = () => {
     isLoading: groupsLoading,
     isError: groupsError,
     data: groups,
+    refetch,
   } = useQuery<TeamResponse, Error, Team[]>({
-    queryKey: ['groupPage', { searchTerm, activeFilters }],
+    queryKey: ['groupPage', searchTerm, activeFilters],
     queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
     select: (response: TeamResponse) => response.content,
+    refetchOnWindowFocus: false,
+    enabled: initialLoad,
   })
+
+  useEffect(() => {
+    if (initialLoad) {
+      refetch().then(() => setInitialLoad(false))
+    }
+  }, [initialLoad, refetch])
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
   }
-
-  const verifyPasswordMutation = useMutation({
-    mutationFn: (enteredPassword: string) =>
-      verifyGroupPassword(selectedGroup!.id, enteredPassword),
-  })
 
   const toggleFilter = (tagId: number | null | undefined) => {
     if (tagId !== null && tagId !== undefined) {
@@ -62,17 +61,26 @@ const SearchGroup = () => {
           ? activeFilters.filter((id) => id !== tagId)
           : [...activeFilters, tagId]
       )
+      setInitialLoad(true)
     }
   }
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
+  }
+
+  const executeSearch = () => {
+    refetch()
   }
 
   const handleGroupClick = (group: Team) => {
     setSelectedGroup(group)
     setPassword('')
-    setModalType(group.hasPassword ? 'password' : 'info')
+    if (group.maxParticipants === group.currentParticipants) {
+      setModalType('max')
+    } else {
+      setModalType(group.hasPassword ? 'password' : 'info') // 기존 로직 유지
+    }
   }
 
   const closeModal = () => {
@@ -80,8 +88,16 @@ const SearchGroup = () => {
     setPassword('')
   }
 
-  const joinGroup = (group: Team) => {
-    alert(`${group.teamName}가입이 완료되었습니다.`)
+  const verifyPasswordSuccess = () => {
+    setModalType('info')
+  }
+
+  const handlePasswordIncorrect = () => {
+    setModalType('error')
+  }
+
+  const refreshGroups = () => {
+    refetch()
   }
 
   const navigateToAddGroup = () => {
@@ -95,9 +111,12 @@ const SearchGroup = () => {
     <PageWrapper>
       <PageContainer>
         <PageTitle>그룹 탐색</PageTitle>
-        <SearchBar onChange={handleSearchChange} value={searchTerm} />
+        <SearchBar
+          onChange={handleSearchChange}
+          value={searchTerm}
+          onSearch={executeSearch}
+        />
         <TagFilter
-          tags={tagMock.tagList}
           activeFilters={activeFilters}
           onToggleFilter={toggleFilter}
         />
@@ -108,15 +127,18 @@ const SearchGroup = () => {
             onCardClick={handleGroupClick}
           />
         )}
-        <GroupModal
-          modalType={modalType}
-          selectedGroup={selectedGroup}
-          password={password}
-          onPasswordChange={handlePasswordChange}
-          onVerifyPassword={() => verifyPasswordMutation.mutate(password)}
-          onClose={closeModal}
-          onJoinGroup={joinGroup}
-        />
+        {modalType && (
+          <GroupModal
+            modalType={modalType}
+            selectedGroup={selectedGroup}
+            password={password}
+            onPasswordChange={handlePasswordChange}
+            onClose={closeModal}
+            onPasswordIncorrect={handlePasswordIncorrect}
+            onPasswordVerified={verifyPasswordSuccess}
+            refreshGroups={refreshGroups}
+          />
+        )}
       </PageContainer>
       <AddButton onClick={navigateToAddGroup}>+</AddButton>
     </PageWrapper>
@@ -128,22 +150,17 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #f2f2f6;
+  background-color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
   overflow-y: auto;
-  overflow-x: hidden;
 `
 
 const PageContainer = styled.div`
-  padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 10px;
-  margin: 20px 0px;
 `
 
 const PageTitle = styled.p`
@@ -185,7 +202,6 @@ const LoadingContainer = styled.div`
 
 const LoadingText = styled.p`
   font-size: 20px;
-  color: #555;
 `
 
 const ErrorContainer = styled.div`
@@ -194,12 +210,10 @@ const ErrorContainer = styled.div`
   align-items: center;
   height: 100vh;
   width: 100%;
-  background-color: #ffebee;
 `
 
 const ErrorMessage = styled.p`
   font-size: 20px;
-  color: #b71c1c;
 `
 
 export default SearchGroup

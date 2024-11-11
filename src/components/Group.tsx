@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import { Tag, Team } from '../api/getGroup'
+import { Team } from '../api/getGroup'
+import { Tag } from '../api/getTags'
 
 interface GroupProps {
   group: Team
@@ -16,10 +17,9 @@ const Group: React.FC<GroupProps> = ({
   onButtonClick,
 }) => {
   const getTagAttributes = (tags: Tag[]): string[] => {
-    return tags.map((tag) => `#${tag.tagName}`)
+    return tags.map((tag) => `#${tag.teamTagName}`)
   }
 
-  // Menu 버튼 클릭 이벤트 핸들러
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     if (onButtonClick) {

@@ -5,7 +5,7 @@ import KAKAO_LOGIN from '../assets/kakao.png'
 const Login = () => {
   // 카카오 OAuth 설정
   const APP_KEY = '831c88c18690d9ffa567b4a7da7f8c0e'
-  const REDIRECT_URI = `http://localhost:3000/oauth`
+  const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URL
 
   // OAuth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`

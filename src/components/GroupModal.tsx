@@ -1,16 +1,19 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
-import { Team } from '../api/getGroup'
+import { Team, verifyGroupPassword } from '../api/getGroup'
+import { joinGroup } from '../api/postGroup'
 
 interface GroupModalProps {
   modalType: string
   selectedGroup?: Team
   password: string
   onPasswordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onVerifyPassword: () => void
   onClose: () => void
-  onJoinGroup?: (group: Team) => void
+  onPasswordVerified: () => void
+  onPasswordIncorrect: () => void
+  refreshGroups: () => void
 }
 
 const GroupModal: React.FC<GroupModalProps> = ({
@@ -18,11 +21,41 @@ const GroupModal: React.FC<GroupModalProps> = ({
   selectedGroup,
   password,
   onPasswordChange,
-  onVerifyPassword,
   onClose,
-  onJoinGroup = () => {},
+  onPasswordVerified,
+  onPasswordIncorrect,
+  refreshGroups,
 }) => {
-  const modalContent = () => {
+  const joinMutation = useMutation({
+    mutationFn: () => joinGroup(selectedGroup!),
+    onSuccess: () => {
+      onClose()
+      refreshGroups()
+    },
+    onError: () => {
+      onPasswordIncorrect()
+    },
+  })
+
+  const handleJoinGroup = () => {
+    joinMutation.mutate()
+  }
+
+  const { mutate: verifyPassword } = useMutation({
+    mutationFn: () => verifyGroupPassword(selectedGroup!.id, password),
+    onSuccess: (isValid) => {
+      if (isValid) {
+        onPasswordVerified()
+      } else {
+        onPasswordIncorrect()
+      }
+    },
+    onError: () => {
+      onPasswordIncorrect()
+    },
+  })
+
+  const renderModalContent = () => {
     switch (modalType) {
       case 'password':
         return (
@@ -36,10 +69,11 @@ const GroupModal: React.FC<GroupModalProps> = ({
             />
             <ModalBtnContainer>
               <CancelBtn onClick={onClose}>취소</CancelBtn>
-              <DoneBtn onClick={onVerifyPassword}>확인</DoneBtn>
+              <DoneBtn onClick={() => verifyPassword()}>확인</DoneBtn>
             </ModalBtnContainer>
           </Modal>
         )
+
       case 'error':
         return (
           <Modal isOpen onClose={onClose}>
@@ -50,30 +84,65 @@ const GroupModal: React.FC<GroupModalProps> = ({
             </ModalBtnContainer>
           </Modal>
         )
-      case 'info':
+
+      case 'max':
         return (
           <Modal isOpen onClose={onClose}>
-            <ModalTitle>{selectedGroup?.teamName}</ModalTitle>
-            <ModalText>
-              참여 인원: {selectedGroup?.currentParticipants}/
-              {selectedGroup?.maxParticipants}
-            </ModalText>
+            <ModalTitle>그룹 가입</ModalTitle>
+            <ModalText>정원이 모두 찼습니다.</ModalText>
             <ModalBtnContainer>
-              <DoneBtn
-                onClick={() => selectedGroup && onJoinGroup(selectedGroup)}
-              >
-                그룹참여
-              </DoneBtn>
-              <CancelBtn onClick={onClose}>취소</CancelBtn>
+              <CancelBtn onClick={onClose}>확인</CancelBtn>
             </ModalBtnContainer>
           </Modal>
         )
+
+      case 'info':
+        return (
+          <Modal isOpen onClose={onClose}>
+            <ModalHeader>
+              <ModalTitle>{selectedGroup?.teamName}</ModalTitle>
+              <ModalParticipantCount>
+                {selectedGroup?.currentParticipants}/
+                {selectedGroup?.maxParticipants}명
+                {selectedGroup?.hasPassword && (
+                  <LockIcon className="material-symbols-outlined">
+                    lock
+                  </LockIcon>
+                )}
+              </ModalParticipantCount>
+            </ModalHeader>
+            <ModalContent>
+              <ModalText>
+                <ModalBold>그룹장 : </ModalBold>
+                {selectedGroup?.leaderNickname}
+              </ModalText>
+              <ModalText>
+                <ModalBold>태그 : </ModalBold>#
+                {selectedGroup?.tagList
+                  .map((tag) => tag.teamTagName)
+                  .join(' #')}
+              </ModalText>
+              <ModalText>
+                <ModalBold>그룹소개 : </ModalBold>
+                {selectedGroup?.teamDescription}
+              </ModalText>
+              <ModalBtnContainer>
+                <CancelBtn onClick={onClose}>취소</CancelBtn>
+                <DoneBtn onClick={handleJoinGroup}>그룹참여</DoneBtn>
+              </ModalBtnContainer>
+            </ModalContent>
+          </Modal>
+        )
+
       default:
         return null
     }
   }
+  return renderModalContent()
+}
 
-  return modalContent()
+GroupModal.defaultProps = {
+  selectedGroup: undefined,
 }
 
 const ModalTitle = styled.div`
@@ -116,6 +185,38 @@ const DoneBtn = styled.div`
   padding: 5px;
   color: #6d86cb;
   cursor: pointer;
+`
+const ModalHeader = styled.div`
+  position: relative;
+  width: 100%;
+`
+
+const ModalParticipantCount = styled.div`
+  font-size: 12px;
+  color: #8e8e8e;
+  padding: 10px;
+  margin: 6px 0 0 0;
+`
+
+const ModalContent = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+`
+
+const ModalBold = styled.div`
+  font-size: 12px;
+  color: #707070;
+  font-weight: 500;
+  position: inline-block;
+  width: 20%;
+  float: left;
+`
+
+const LockIcon = styled.span`
+  color: #828282;
+  position: absolute;
+  font-size: 14px;
+  margin-left: 5px;
 `
 
 export default GroupModal

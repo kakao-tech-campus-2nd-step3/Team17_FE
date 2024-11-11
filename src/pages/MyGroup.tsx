@@ -1,18 +1,16 @@
-import React, { useState, ChangeEvent, useEffect } from 'react'
-import styled from '@emotion/styled'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import styled from '@emotion/styled'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import GroupList from '../components/GroupList'
+import Modal from '../components/Modal'
 import {
-  getGroup,
-  Team,
-  verifyGroupPassword,
-  TeamResponse,
+  MyTeam,
+  getMyGroup,
+  deleteTeam,
+  withdrawFromTeam,
 } from '../api/getGroup'
-import GroupListContainer from '../components/GroupListContainer'
-import GroupModal from '../components/GroupModal'
-import TagFilter from '../components/TagFilter'
-import SearchBar from '../components/SearchBar'
-import tagMock from '../mocks/TagMock'
+import getMypage from '../api/getMypage'
 
 const Error = () => (
   <ErrorContainer>
@@ -26,114 +24,169 @@ const Loading = () => (
   </LoadingContainer>
 )
 
-const SearchGroup = () => {
-  const [activeFilters, setActiveFilters] = useState<number[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [modalType, setModalType] = useState('')
-  const [selectedGroup, setSelectedGroup] = useState<Team | undefined>(
-    undefined
-  )
-  const [password, setPassword] = useState('')
-  const [groups, setGroups] = useState<Team[]>([])
+const MyGroup = () => {
+  const [groupType, setGroupType] = useState('all')
+  const [isModalOpen, setModalOpen] = useState(false)
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState<MyTeam | null>(null)
+
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const fetchGroup = () => {
+    return getMyGroup(
+      0,
+      8,
+      groupType === 'joined' ? 'teamId,asc' : 'teamId,desc'
+    )
+  }
 
   const {
+    data: groups,
     isLoading: groupsLoading,
     isError: groupsError,
-    data,
-  } = useQuery<TeamResponse, Error, Team[]>({
-    queryKey: ['groupPage', { searchTerm, activeFilters }],
-    queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
-    select: (response: TeamResponse) => response.content,
+  } = useQuery({
+    queryKey: ['myGroups', groupType],
+    queryFn: fetchGroup,
+    retry: 1,
   })
 
-  const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value)
-  }
-
-  useEffect(() => {
-    if (data && Array.isArray(data)) {
-      setGroups(data)
-    }
-  }, [data])
-
-  const verifyPasswordMutation = useMutation({
-    mutationFn: (enteredPassword: string) =>
-      verifyGroupPassword(selectedGroup!.id, enteredPassword),
+  const {
+    data: userData,
+    isLoading: userLoading,
+    isError: userError,
+  } = useQuery({
+    queryKey: ['userDetails'],
+    queryFn: getMypage,
+    retry: 1,
   })
 
-  const toggleFilter = (tagId: number | null | undefined) => {
-    if (tagId !== null && tagId !== undefined) {
-      setActiveFilters(
-        activeFilters.includes(tagId)
-          ? activeFilters.filter((id) => id !== tagId)
-          : [...activeFilters, tagId]
-      )
-    }
+  const currentUserNickname = userData?.nickname
+
+  if (groupsLoading || userLoading) return <Loading />
+  if (groupsError || userError) return <Error />
+
+  const filteredGroups =
+    groups?.content.filter((group) => {
+      if (groupType === 'all') {
+        return true
+      }
+      if (groupType === 'joined') {
+        return group.leaderNickname !== currentUserNickname
+      }
+      return group.leaderNickname === currentUserNickname
+    }) || []
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setGroupType(event.target.value)
+    queryClient.invalidateQueries({
+      queryKey: ['myGroups'],
+    })
   }
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value)
-  }
-
-  const handleGroupClick = (group: Team) => {
+  const handleGroupClick = (group: MyTeam) => {
     setSelectedGroup(group)
-    setPassword('')
-    setModalType(group.hasPassword ? 'password' : 'info')
+    setModalOpen(true)
   }
 
   const closeModal = () => {
-    setModalType('')
-    setPassword('')
+    setModalOpen(false)
+    setIsSecondModalOpen(false)
   }
 
-  const joinGroup = (group: Team) => {
-    alert(`${group.teamName}가입이 완료되었습니다.`)
+  const openSecondModal = () => {
+    setIsSecondModalOpen(true)
   }
 
-  const navigateToAddGroup = () => {
-    navigate('/addGroup')
+  const closeSecondModal = () => {
+    setIsSecondModalOpen(false)
+    setModalOpen(false)
   }
 
-  if (groupsLoading) return <Loading />
-  if (groupsError) return <Error />
+  const handleMenuClick = (group: MyTeam) => {
+    navigate(`/ranking/${group.id}`)
+  }
+
+  const handleAction = async () => {
+    if (selectedGroup && selectedGroup.id) {
+      if (selectedGroup.leaderNickname === currentUserNickname) {
+        await deleteTeam(selectedGroup.id)
+      } else {
+        await withdrawFromTeam(selectedGroup.id)
+      }
+      closeModal()
+      queryClient.invalidateQueries({
+        queryKey: ['myGroups', groupType],
+      })
+    } else {
+      closeModal()
+    }
+  }
+
+  const renderGroups = () => {
+    if (!filteredGroups || filteredGroups.length === 0) {
+      return <NoGroupsMessage>그룹이 존재하지 않습니다.</NoGroupsMessage>
+    }
+    return (
+      <GroupList
+        groups={filteredGroups}
+        showMenuButton
+        onCardClick={handleMenuClick}
+        onButtonClick={handleGroupClick}
+      />
+    )
+  }
+
+  const modalContent =
+    selectedGroup?.leaderNickname === currentUserNickname
+      ? '그룹 삭제하기'
+      : '그룹 탈퇴하기'
 
   return (
     <PageWrapper>
       <PageContainer>
-        <PageTitle>그룹 탐색</PageTitle>
-        <SearchBar onChange={handleSearchChange} value={searchTerm} />
-        <TagFilter
-          tags={tagMock.tagList}
-          activeFilters={activeFilters}
-          onToggleFilter={toggleFilter}
-        />
-        <GroupListContainer
-          groups={groups}
-          searchTerm={searchTerm}
-          onCardClick={handleGroupClick}
-        />
-        <GroupModal
-          modalType={modalType}
-          selectedGroup={selectedGroup}
-          password={password}
-          onPasswordChange={handlePasswordChange}
-          onVerifyPassword={() => verifyPasswordMutation.mutate(password)}
-          onClose={closeModal}
-          onJoinGroup={joinGroup}
-        />
+        <PageTitle>나의 그룹</PageTitle>
+        <DropdownContainer>
+          <select value={groupType} onChange={handleSelectChange}>
+            <option value="all">전체 그룹</option>
+            <option value="joined">가입한 그룹</option>
+            <option value="created">내가 만든 그룹</option>
+          </select>
+        </DropdownContainer>
+        {renderGroups()}
+        {/* 첫 번째 모달 */}
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <ModalButton onClick={openSecondModal}>{modalContent}</ModalButton>
+        </Modal>
+
+        {/* 두 번째 모달 */}
+        <Modal isOpen={isSecondModalOpen} onClose={closeSecondModal}>
+          <ModalTitle>{modalContent}</ModalTitle>
+          <ModalText
+            placeholder={`'${selectedGroup?.teamName}'을 ${
+              selectedGroup?.leaderNickname === currentUserNickname
+                ? '삭제하시겠습니까?'
+                : '탈퇴하시겠습니까?'
+            }`}
+          />
+          <ModalBtnContainer>
+            <CancelBtn onClick={closeSecondModal}>취소</CancelBtn>
+            <DoneBtn onClick={handleAction}>완료</DoneBtn>
+          </ModalBtnContainer>
+        </Modal>
       </PageContainer>
-      <AddButton onClick={navigateToAddGroup}>+</AddButton>
     </PageWrapper>
   )
 }
+
+export default MyGroup
 
 /* Page */
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #f2f2f6;
+  background-color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
@@ -142,13 +195,9 @@ const PageWrapper = styled.div`
 `
 
 const PageContainer = styled.div`
-  padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 10px;
-  margin: 20px 0px;
 `
 
 const PageTitle = styled.p`
@@ -157,27 +206,76 @@ const PageTitle = styled.p`
   font-weight: bold;
 `
 
-const AddButton = styled.button`
-  align-self: flex-end;
-  margin-top: auto;
-  position: absolute;
-  transform: translateX(-50%);
+/* Dropdown */
+const DropdownContainer = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  bottom: 100px;
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
-  background-color: rgba(181, 195, 233, 0.8);
-  color: white;
-  font-size: 24px;
-  border: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  &:hover {
-    background-color: #b5c3e9;
+  justify-content: flex-end;
+  margin: 0px 20px 10px 0px;
+  width: 100%;
+  select {
+    padding: 4px 0px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    cursor: pointer;
   }
+`
+
+/* Modal */
+const ModalTitle = styled.div`
+  font-size: 20px;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  box-sizing: border-box;
+`
+
+const ModalText = styled.input`
+  width: 90%;
+  padding: 0px 7px;
+  margin: 10px 0px;
+  border: none;
+  outline: none;
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const CancelBtn = styled.div`
+  padding: 5px 15px;
+  color: #969393;
+  cursor: pointer;
+`
+
+const DoneBtn = styled.div`
+  padding: 5px;
+  color: #6d86cb;
+  cursor: pointer;
+`
+
+const ModalButton = styled.button`
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  &:hover {
+    color: #b5c3e9;
+  }
+`
+
+const NoGroupsMessage = styled.div`
+  font-size: 18px;
+  margin-top: 40px;
+  margin-bottom: 150px;
+  padding: 100px 0;
+  text-align: center;
 `
 
 const LoadingContainer = styled.div`
@@ -190,7 +288,6 @@ const LoadingContainer = styled.div`
 
 const LoadingText = styled.p`
   font-size: 20px;
-  color: #555;
 `
 
 const ErrorContainer = styled.div`
@@ -199,12 +296,8 @@ const ErrorContainer = styled.div`
   align-items: center;
   height: 100vh;
   width: 100%;
-  background-color: #ffebee;
 `
 
 const ErrorMessage = styled.p`
   font-size: 20px;
-  color: #b71c1c;
 `
-
-export default SearchGroup

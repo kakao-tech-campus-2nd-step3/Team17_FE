@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Exercise } from './ExerciseList'
 import putStopExercise from '../api/putStopExercise'
 
@@ -12,6 +12,14 @@ interface TimerProps {
   activeExerciseId?: number
 }
 
+export const formatTime = (runningTime: number) => {
+  if (Number.isNaN(runningTime)) return '00:00:00'
+  const hours = Math.floor((runningTime / 3600000) % 24)
+  const minutes = Math.floor((runningTime / 60000) % 60)
+  const seconds = Math.floor((runningTime / 1000) % 60)
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
 const Timer: React.FC<TimerProps> = ({
   totalTime,
   setExerciseList,
@@ -19,10 +27,13 @@ const Timer: React.FC<TimerProps> = ({
   selectedDate,
   activeExerciseId,
 }) => {
-  useEffect(() => {}, [totalTime])
+  const queryClient = useQueryClient()
 
   const stopExercise = useMutation({
     mutationFn: putStopExercise,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    },
   })
 
   const [isActive, setIsActive] = useState(false)
@@ -74,14 +85,6 @@ const Timer: React.FC<TimerProps> = ({
     if (activeExerciseId) {
       stopExercise.mutate(activeExerciseId)
     }
-  }
-
-  const formatTime = (runningTime: number) => {
-    if (Number.isNaN(runningTime)) return '00:00:00'
-    const hours = Math.floor((runningTime / 3600000) % 24)
-    const minutes = Math.floor((runningTime / 60000) % 60)
-    const seconds = Math.floor((runningTime / 1000) % 60)
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }
 
   return (

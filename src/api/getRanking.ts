@@ -11,13 +11,13 @@ interface GetRankingParams {
 interface Ranker {
   name: string
   ranking: number
-  totalExerciseTime: string
+  totalExerciseTime: number
 }
 
 interface RankingResponse {
   myRanking: number
   myNickname: string
-  myTime: string
+  myExerciseTime: number
   slice: {
     content: Ranker[]
     pageable: {

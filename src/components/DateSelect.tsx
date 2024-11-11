@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/style.css'
-import { format } from 'date-fns'
+import { format, isAfter, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import styled from '@emotion/styled'
+import { handleAdjustDate } from '../pages/Main'
 
 interface DateSelectProps {
   selectedDate: Date
@@ -19,6 +20,8 @@ const DateSelect: React.FC<DateSelectProps> = ({
   })
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+  const today = handleAdjustDate(new Date())
+  const isToday = isSameDay(selectedDate, today)
 
   const handlePrev = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
@@ -29,7 +32,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
   }
 
   const handleDateClick = () => {
-    setIsCalendarOpen(!isCalendarOpen)
+    setIsCalendarOpen((prev) => !prev)
   }
 
   useEffect(() => {
@@ -58,9 +61,11 @@ const DateSelect: React.FC<DateSelectProps> = ({
   return (
     <DateSelectWrapper>
       <DateSelectContainer>
-        <DateSelecter onClick={handlePrev}>{'<'}</DateSelecter>
+        <DateSelecterLeft onClick={handlePrev}>{'<'}</DateSelecterLeft>
         <DateSelection onClick={handleDateClick}>{formattedDate}</DateSelection>
-        <DateSelecter onClick={handleNext}>{'>'}</DateSelecter>
+        <DateSelecterRight isToday={isToday} onClick={handleNext}>
+          {'>'}
+        </DateSelecterRight>
       </DateSelectContainer>
       {isCalendarOpen && (
         <CalendarContainer ref={calendarRef}>
@@ -69,6 +74,8 @@ const DateSelect: React.FC<DateSelectProps> = ({
             selected={selectedDate}
             onSelect={handleDateSelect}
             locale={ko}
+            disabled={(date) => isAfter(date, today)}
+            today={today}
           />
         </CalendarContainer>
       )}
@@ -76,19 +83,29 @@ const DateSelect: React.FC<DateSelectProps> = ({
   )
 }
 
-const DateSelectWrapper = styled.div``
+const DateSelectWrapper = styled.div`
+  position: relative;
+`
 
 const DateSelectContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 `
 
-const DateSelecter = styled.div`
+const DateSelecterLeft = styled.div`
   font-size: 25px;
   cursor: pointer;
   font-weight: 500;
+`
+
+const DateSelecterRight = styled.div<{ isToday: boolean }>`
+  font-size: 25px;
+  cursor: ${({ isToday }) => (isToday ? 'default' : 'pointer')};
+  font-weight: 500;
+  visibility: ${({ isToday }) => (isToday ? 'hidden' : 'visible')};
 `
 
 const DateSelection = styled.div`
@@ -106,6 +123,9 @@ const CalendarContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   z-index: 10;
+  position: absolute;
+  right: -17px;
+  top: 0px;
 `
 
 export default DateSelect

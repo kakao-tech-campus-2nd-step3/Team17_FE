@@ -4,8 +4,8 @@ interface MypageResponse {
   nickname: string
   email: string
   attendance: number
-  weeklyTotal: string
-  monthlyTotal: string
+  weeklyTotal: number
+  monthlyTotal: number
 }
 
 const getMypage = async (): Promise<MypageResponse> => {

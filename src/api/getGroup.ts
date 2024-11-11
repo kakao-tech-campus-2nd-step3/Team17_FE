@@ -1,40 +1,5 @@
-import { AxiosError } from 'axios'
 import axiosInstance from './axiosInstance'
-
-export interface Tag {
-  tagId: number
-  tagName: string
-  tagAttribute: string
-}
-
-interface SortInfo {
-  empty: boolean
-  sorted: boolean
-  unsorted: boolean
-}
-
-interface Pageable {
-  pageNumber: number
-  pageSize: number
-  sort: SortInfo
-  offset: number
-  unpaged: boolean
-  paged: boolean
-}
-
-interface TagResponse {
-  totalPages: number
-  totalElements: number
-  size: number
-  content: Tag[]
-  number: number
-  sort: SortInfo
-  first: boolean
-  last: boolean
-  numberOfElements: number
-  pageable: Pageable
-  empty: boolean
-}
+import { Tag } from './getTags'
 
 export interface Team {
   id: number
@@ -45,6 +10,10 @@ export interface Team {
   currentParticipants: number
   hasPassword: boolean
   tagList: Tag[]
+}
+
+export interface MyTeam extends Team {
+  password?: string | null
 }
 
 export interface TeamResponse {
@@ -74,101 +43,74 @@ export interface TeamResponse {
   empty: boolean
 }
 
-export interface MyGroup {
-  teamName: string
-  leaderNickname: string
-  teamDescription: string
-  maxParticipants: number
-  currentParticipants: number
-  password?: string | null
-  tagList: Tag[]
-}
-
 export interface MyGroupResponse {
-  groupList: MyGroup[]
+  groupList: MyTeam[]
 }
 
 export const getGroup = async (
   page = 0,
   size = 8,
-  sort = 'asc',
+  sort = 'teamId,asc',
   searchTerm = '',
   activeFilters: number[] = []
 ): Promise<TeamResponse> => {
   let queryString = `page=${page}&size=${size}&sort=${sort}`
 
   if (searchTerm) {
-    queryString += `&search=${encodeURIComponent(searchTerm)}`
+    queryString += `&teamName=${encodeURIComponent(searchTerm)}`
   }
 
   if (activeFilters.length > 0) {
-    queryString += `&filters=${activeFilters.join(',')}`
+    queryString += `&tagIdList=${activeFilters.join(',')}`
   }
 
   const url = `/api/team?${queryString}`
-  const accessToken = localStorage.getItem('authToken')
+  const response = await axiosInstance.get<TeamResponse>(url)
+  return response.data
+}
 
+export const getMyGroup = async (
+  page = 0,
+  size = 8,
+  sort = 'teamId,asc'
+): Promise<TeamResponse> => {
   try {
-    const response = await axiosInstance.get<TeamResponse>(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+    const url = `/api/team/joined?page=${page}&size=${size}&sort=${sort}`
+    const response = await axiosInstance.get<{ content: MyTeam[] }>(url)
+    const teams = response.data.content.map((group: MyTeam) => ({
+      ...group,
+      id: group.id,
+      hasPassword: !!group.hasPassword,
+    }))
+
+    return {
+      content: teams,
+      pageable: {
+        pageNumber: page,
+        pageSize: size,
+        sort: {
+          empty: false,
+          sorted: true,
+          unsorted: false,
+        },
+        offset: page * size,
+        paged: true,
+        unpaged: false,
       },
-    })
-    return response.data
-  } catch (error) {
-    console.error('Error fetching groups:', error)
-    throw error
-  }
-}
-
-export const getMyGroup = async (): Promise<MyGroup[]> => {
-  const accessToken = localStorage.getItem('authToken')
-
-  try {
-    const response = await axiosInstance.get<MyGroupResponse>(
-      '/api/member/group',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
-
-    return response.data.groupList
-  } catch (error) {
-    const axiosError = error as AxiosError
-    console.error('Error fetching member groups:', axiosError.message)
-    if (axiosError.response) {
-      console.error('Response data:', axiosError.response.data)
-      console.error('Status:', axiosError.response.status)
+      first: page === 0,
+      last: teams.length < size,
+      size,
+      number: page,
+      sort: {
+        empty: false,
+        sorted: true,
+        unsorted: false,
+      },
+      numberOfElements: teams.length,
+      empty: teams.length === 0,
     }
-    throw axiosError
-  }
-}
-
-// 아직 api 배포 전(추후 구현)
-export const getTags = async (): Promise<Tag[]> => {
-  const accessToken = localStorage.getItem('authToken')
-
-  try {
-    const response = await axiosInstance.get<TagResponse>(
-      '/api/team?page=0&size=10&sort=asc',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
-
-    return response.data.content
   } catch (error) {
-    const axiosError = error as AxiosError
-    console.error('Error fetching tags:', axiosError.message)
-    if (axiosError.response) {
-      console.error('Response data:', axiosError.response.data)
-      console.error('Status:', axiosError.response.status)
-    }
-    throw axiosError
+    throw new Error('Failed to fetch group data.')
   }
 }
 
@@ -180,6 +122,24 @@ export const verifyGroupPassword = async (
     password,
   })
   return response.status === 200
+}
+
+export const deleteTeam = async (teamId: number): Promise<void> => {
+  try {
+    const url = `/api/team/${teamId}`
+    await axiosInstance.delete(url)
+  } catch (error) {
+    throw new Error('Failed to delete team.')
+  }
+}
+
+export const withdrawFromTeam = async (teamId: number): Promise<void> => {
+  try {
+    const url = `/api/team/withdraw/${teamId}`
+    await axiosInstance.delete(url)
+  } catch (error) {
+    throw new Error('Failed to withdraw from team.')
+  }
 }
 
 export {}

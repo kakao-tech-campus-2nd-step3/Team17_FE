@@ -1,13 +1,47 @@
 import styled from '@emotion/styled'
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import Modal from './Modal'
 
 const Footer = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [isWarningOpen, setIsWarningOpen] = useState(false)
+
+  const isAnyActive = new URLSearchParams(location.search).has(
+    'activeExerciseId'
+  )
+
+  useEffect(() => {
+    if (isAnyActive) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        event.preventDefault()
+      }
+      window.addEventListener('beforeunload', handleBeforeUnload)
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+      }
+    }
+    return undefined
+  }, [isAnyActive])
+
+  const handleNavigation = (target: string) => {
+    if (isAnyActive) {
+      setIsWarningOpen(true)
+    } else {
+      navigate(target)
+    }
+  }
+
+  const handleWarningClose = () => {
+    setIsWarningOpen(false)
+    window.history.back()
+  }
 
   return (
     <FooterWrapper>
       <Container>
-        <Link to="/">
+        <Link to="/" onClick={() => handleNavigation('/')}>
           <NavIcon
             isActive={location.pathname === '/'}
             className="material-symbols-outlined"
@@ -16,7 +50,7 @@ const Footer = () => {
           </NavIcon>
           <NavText isActive={location.pathname === '/'}>홈</NavText>
         </Link>
-        <Link to="/mygroup">
+        <Link to="/mygroup" onClick={() => handleNavigation('/mygroup')}>
           <NavIcon
             isActive={location.pathname === '/mygroup'}
             className="material-symbols-outlined"
@@ -27,7 +61,7 @@ const Footer = () => {
             나의 그룹
           </NavText>
         </Link>
-        <Link to="/searchgroup">
+        <Link to="/searchgroup" onClick={() => '/searchgroup'}>
           <NavIcon
             isActive={location.pathname === '/searchgroup'}
             className="material-symbols-outlined"
@@ -38,7 +72,7 @@ const Footer = () => {
             그룹 탐색
           </NavText>
         </Link>
-        <Link to="/market">
+        <Link to="/market" onClick={() => handleNavigation('/market')}>
           <NavIcon
             isActive={location.pathname === '/market'}
             className="material-symbols-outlined"
@@ -47,7 +81,7 @@ const Footer = () => {
           </NavIcon>
           <NavText isActive={location.pathname === '/market'}>마켓</NavText>
         </Link>
-        <Link to="/mypage">
+        <Link to="/mypage" onClick={() => handleNavigation('/mypage')}>
           <NavIcon
             isActive={location.pathname === '/mypage'}
             className="material-symbols-outlined"
@@ -59,6 +93,17 @@ const Footer = () => {
           </NavText>
         </Link>
       </Container>
+      <Modal isOpen={isWarningOpen} onClose={handleWarningClose}>
+        <ModalBody>
+          <ModalBodyLine>
+            운동 진행중 페이지에서 벗어나 타이머에 오차가 발생할 수 있습니다.{' '}
+            <span style={{ color: '#6d86cb' }}>운동을 종료해주세요</span>
+          </ModalBodyLine>
+        </ModalBody>
+        <ModalBtnContainer>
+          <DoneBtn onClick={handleWarningClose}>확인</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
     </FooterWrapper>
   )
 }
@@ -98,6 +143,35 @@ const NavIcon = styled.div<{ isActive: boolean }>`
 const NavText = styled.div<{ isActive: boolean }>`
   font-size: 14px;
   color: ${(props) => (props.isActive ? '#7992EB' : '#4E4C4C')};
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const DoneBtn = styled.div`
+  padding: 5px;
+  color: #6d86cb;
+  cursor: pointer;
+`
+
+const ModalBody = styled.div`
+  margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  margin-right: 15px;
+  display: flex;
+  flex-direction: column;
+`
+
+const ModalBodyLine = styled.div`
+  color: #5d5d5d;
+  margin-top: 5px;
+  font-size: 15px;
+  line-height: 1.6;
 `
 
 export default Footer

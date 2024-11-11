@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
-import { DateTime, Duration } from 'luxon'
+// import { DateTime } from 'luxon'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -9,22 +9,30 @@ import chatbubble from '../assets/chatbubble.svg'
 import getRanking from '../api/getRanking'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
-
-export const formatDuration = (isoDuration: string) => {
-  const duration = Duration.fromISO(isoDuration)
-  const hours = String(duration.hours).padStart(2, '0')
-  const minutes = String(duration.minutes).padStart(2, '0')
-  const seconds = String(duration.seconds).padStart(2, '0')
-  return `${hours}:${minutes}:${seconds}`
-}
+import { formatTime } from '../components/Timer'
 
 const Ranking = () => {
   const { groupId } = useParams()
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
+  const resetHour = 3
+  const getCustomDate = (date: Date) => {
+    const adjustedDate = new Date(date)
+
+    // 만약 현재 시간이 새벽 3시 이전이라면 하루 전 날짜로 조정
+    if (date.getTime() < resetHour) {
+      adjustedDate.setDate(adjustedDate.getDate() - 1)
+    }
+
+    const year = adjustedDate.getFullYear()
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0')
+    const day = String(adjustedDate.getDate()).padStart(2, '0')
+    return `${year}${month}${day}`
+  }
+  const formattedDate = getCustomDate(selectedDate)
+  // const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['ranking', groupId],
+    queryKey: ['ranking', groupId, formattedDate],
     queryFn: () =>
       getRanking({
         groupId: groupId || '',
@@ -66,9 +74,7 @@ const Ranking = () => {
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
-              <RankerTime>
-                {formatDuration(ranker.totalExerciseTime)}
-              </RankerTime>
+              <RankerTime>{formatTime(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
           )) || <Error name="랭크" />}
         </EntireRank>
@@ -80,7 +86,7 @@ const Ranking = () => {
               {rankData.myRanking}
             </MyRankerCount>
             <RankerName>{rankData.myNickname}</RankerName>
-            <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
+            <RankerTime>{formatTime(rankData.myExerciseTime)}</RankerTime>
           </MyRankElement>
         )}
       </MyRank>
@@ -130,18 +136,16 @@ const RankContainer = styled.div`
 `
 
 const DateContainer = styled.div`
-  padding: 15px 0;
+  padding: 15px 20px;
   color: #4a4a4a;
 `
 
 const EntireRank = styled.div`
-  height: 470px;
+  height: 400px;
   overflow-y: auto;
 `
 
 const MyRank = styled.div`
-  border: 1px solid #b5c3e9;
-  border-radius: 10px;
   margin-top: 20px;
 `
 
@@ -149,6 +153,8 @@ const MyRankElement = styled.div<{ ranking: number }>`
   display: flex;
   font-size: 18px;
   padding: 10px 20px;
+  border: 1px solid #b5c3e9;
+  border-radius: 10px;
   background: ${(props) => {
     if (props.ranking === 1)
       return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'

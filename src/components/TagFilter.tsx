@@ -1,32 +1,56 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { Tag } from '../mocks/TagMock'
+import { getTags, Tag } from '../api/getTags'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   active: boolean
 }
 
 interface TagFilterProps {
-  tags: Tag[]
   activeFilters: number[]
   onToggleFilter: (tagId: number) => void
 }
 
 const TagFilter: React.FC<TagFilterProps> = ({
-  tags,
   activeFilters,
   onToggleFilter,
 }) => {
+  const [tags, setTags] = useState<Tag[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const fetchedTags = await getTags()
+        setTags(fetchedTags)
+        setLoading(false)
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch tags:', err)
+        setError(true)
+        setLoading(false)
+      }
+    }
+
+    fetchTags()
+  }, [])
+
+  if (loading) return <div>Loading tags...</div>
+  if (error) return <div>Error loading tags.</div>
+
   const groupTagsByAttribute = (tagItems: Tag[]) => {
     const groups: { [key: string]: Tag[] } = {}
+    if (!tagItems) return groups
     tagItems.forEach((tag) => {
-      if (!groups[tag.tagAttribute]) {
-        groups[tag.tagAttribute] = []
+      if (!groups[tag.teamTagAttribute]) {
+        groups[tag.teamTagAttribute] = []
       }
-      groups[tag.tagAttribute].push(tag)
+      groups[tag.teamTagAttribute].push(tag)
     })
     return groups
   }
+
   const tagGroups = groupTagsByAttribute(tags)
 
   return (
@@ -41,7 +65,7 @@ const TagFilter: React.FC<TagFilterProps> = ({
                 onClick={() => onToggleFilter(tag.tagId)}
                 active={activeFilters.includes(tag.tagId)}
               >
-                {tag.tagName}
+                {tag.teamTagName}
               </Button>
             ))}
           </TagContainer>
@@ -54,15 +78,15 @@ const TagFilter: React.FC<TagFilterProps> = ({
 export default TagFilter
 
 const Button = styled.button<ButtonProps>`
-  width: 42px;
+  width: 36px;
   background-color: ${({ active }) => (active ? '#B5C3E9' : 'white')};
   color: ${({ active }) => (active ? 'white' : '#768DCB')};
   border: 1px solid #768dcb;
   border-radius: 8px;
-  padding: 2px;
-  margin: 3px 2px;
+  padding: 3px 2px;
+  margin: 1px 3px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
   transition:
     background-color 0.3s,
     color 0.3s;
